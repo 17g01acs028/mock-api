@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NCBA Bank — Mock API Reference</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0c0f;
+      --surface: #111418;
+      --surface2: #181c22;
+      --border: #232830;
+      --accent: #00c896;
+      --accent2: #0084ff;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --tag-get: #00c896;
+      --tag-post: #0084ff;
+      --tag-put: #f59e0b;
+      --tag-delete: #ef4444;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+    nav {
+      width: 280px;
+      min-width: 280px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 0 0 2rem;
+    }
+
+    .nav-logo {
+      padding: 1.5rem 1.5rem 1rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1rem;
+    }
+
+    .nav-logo h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--accent);
+    }
+
+    .nav-logo p {
+      color: var(--muted);
+      font-size: 10px;
+      margin-top: 2px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .nav-section {
+      padding: 0 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .nav-section-title {
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0.75rem 0.5rem 0.25rem;
+      font-weight: 600;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 11px;
+      transition: all 0.15s;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    .badge {
+      font-size: 9px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 3px;
+      letter-spacing: 0.05em;
+      flex-shrink: 0;
+    }
+
+    .badge-get {
+      background: rgba(0, 200, 150, 0.15);
+      color: var(--tag-get);
+    }
+
+    .badge-post {
+      background: rgba(0, 132, 255, 0.15);
+      color: var(--tag-post);
+    }
+
+    .badge-put {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--tag-put);
+    }
+
+    .badge-delete {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--tag-delete);
+    }
+
+    /* MAIN */
+    main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 2rem 2.5rem;
+      max-width: 900px;
+    }
+
+    .page-header {
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .page-header h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-header p {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .base-url {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 14px;
+      margin-top: 1rem;
+      font-size: 12px;
+    }
+
+    .base-url span {
+      color: var(--muted);
+    }
+
+    .base-url code {
+      color: var(--accent);
+    }
+
+    /* SECTION */
+    .section {
+      margin-bottom: 4rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .section-header h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    /* ENDPOINT CARD */
+    .endpoint {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+
+    .endpoint-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+      user-select: none;
+    }
+
+    .endpoint-header:hover {
+      background: #1e242d;
+    }
+
+    .method-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.08em;
+      min-width: 48px;
+      text-align: center;
+    }
+
+    .method-GET {
+      background: rgba(0, 200, 150, 0.2);
+      color: var(--tag-get);
+      border: 1px solid rgba(0, 200, 150, 0.3);
+    }
+
+    .method-POST {
+      background: rgba(0, 132, 255, 0.2);
+      color: var(--tag-post);
+      border: 1px solid rgba(0, 132, 255, 0.3);
+    }
+
+    .method-PUT {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--tag-put);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .method-DELETE {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--tag-delete);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .endpoint-path {
+      font-size: 13px;
+      color: var(--text);
+      flex: 1;
+    }
+
+    .endpoint-path em {
+      color: var(--accent2);
+      font-style: normal;
+    }
+
+    .endpoint-desc {
+      color: var(--muted);
+      font-size: 11px;
+      margin-left: auto;
+    }
+
+    .endpoint-body {
+      padding: 1.25rem;
+      display: none;
+    }
+
+    .endpoint.open .endpoint-body {
+      display: block;
+    }
+
+    .endpoint.open .endpoint-header {
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* TABS */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0;
+    }
+
+    .tab {
+      padding: 6px 14px;
+      font-size: 11px;
+      font-family: 'IBM Plex Mono', monospace;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--muted);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all 0.15s;
+    }
+
+    .tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* CODE BLOCK */
+    pre {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1rem;
+      overflow-x: auto;
+      font-size: 11.5px;
+      line-height: 1.7;
+      position: relative;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 9px;
+      font-family: 'IBM Plex Mono', monospace;
+      color: var(--muted);
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      transition: all 0.15s;
+    }
+
+    .copy-btn:hover {
+      color: var(--text);
+      border-color: var(--accent);
+    }
+
+    .str {
+      color: #a5f3a5;
+    }
+
+    .num {
+      color: #79c0ff;
+    }
+
+    .key {
+      color: #e2e8f0;
+    }
+
+    .bool {
+      color: #ff9580;
+    }
+
+    .null {
+      color: #8b949e;
+    }
+
+    .comment {
+      color: #656d76;
+      font-style: italic;
+    }
+
+    .url {
+      color: #d2a8ff;
+    }
+
+    /* FIELDS TABLE */
+    .fields-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      margin-bottom: 1rem;
+    }
+
+    .fields-table th {
+      text-align: left;
+      padding: 6px 10px;
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .fields-table td {
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    .fields-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .field-name {
+      color: var(--accent2);
+      font-weight: 500;
+    }
+
+    .field-type {
+      color: var(--warn);
+      font-size: 10px;
+    }
+
+    .field-req {
+      color: var(--accent);
+      font-size: 10px;
+    }
+
+    .field-opt {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .field-desc {
+      color: var(--muted);
+    }
+
+    /* AUTH PILL */
+    .auth-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(0, 200, 150, 0.1);
+      border: 1px solid rgba(0, 200, 150, 0.25);
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 10px;
+      color: var(--accent);
+      margin-left: auto;
+    }
+
+    .label {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .response-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      margin-bottom: 8px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .status-2xx {
+      background: var(--accent);
+    }
+
+    .status-4xx {
+      background: var(--danger);
+    }
+
+    .status-401 {
+      background: var(--warn);
+    }
+
+    /* scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--muted);
+    }
+
+    .chevron {
+      margin-left: auto;
+      color: var(--muted);
+      transition: transform 0.2s;
+      font-size: 10px;
+    }
+
+    .endpoint.open .chevron {
+      transform: rotate(90deg);
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        display: none;
+      }
+
+      main {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <nav>
+    <div class="nav-logo">
+      <h1>NCBA Mock API</h1>
+      <p>v1.0 · Bank Document System</p>
+    </div>
+
+    <div class="nav-section" style="margin-bottom: 2rem;">
+      <a class="nav-link" href="/"
+        style="color:var(--accent); border: 1px solid rgba(0,200,150,0.3); background: rgba(0,200,150,0.1); justify-content: center; font-weight: 600;">
+        ⚙️ Open Admin Portal
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Auth</div>
+      <a class="nav-link" href="#auth"><span class="badge badge-post">POST</span> /auth/login</a>
+      <a class="nav-link" href="#auth"><span class="badge badge-post">POST</span> /auth/refresh</a>
+      <a class="nav-link" href="#auth"><span class="badge badge-post">POST</span> /auth/logout</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Users & Accounts</div>
+      <a class="nav-link" href="#users"><span class="badge badge-get">GET</span> /users/me</a>
+      <a class="nav-link" href="#users"><span class="badge badge-get">GET</span> /users/:id/accounts</a>
+      <a class="nav-link" href="#users"><span class="badge badge-get">GET</span> /accounts/:id</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Standing Orders</div>
+      <a class="nav-link" href="#standing"><span class="badge badge-post">POST</span> /standing-orders</a>
+      <a class="nav-link" href="#standing"><span class="badge badge-get">GET</span> /standing-orders</a>
+      <a class="nav-link" href="#standing"><span class="badge badge-get">GET</span> /standing-orders/:id</a>
+      <a class="nav-link" href="#standing"><span class="badge badge-put">PUT</span> /standing-orders/:id</a>
+      <a class="nav-link" href="#standing"><span class="badge badge-delete">DEL</span> /standing-orders/:id</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Stop Payment</div>
+      <a class="nav-link" href="#stop"><span class="badge badge-post">POST</span> /stop-payments</a>
+      <a class="nav-link" href="#stop"><span class="badge badge-get">GET</span> /stop-payments</a>
+      <a class="nav-link" href="#stop"><span class="badge badge-get">GET</span> /stop-payments/:id</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Deposit Placement</div>
+      <a class="nav-link" href="#deposit"><span class="badge badge-post">POST</span> /deposits</a>
+      <a class="nav-link" href="#deposit"><span class="badge badge-get">GET</span> /deposits</a>
+      <a class="nav-link" href="#deposit"><span class="badge badge-get">GET</span> /deposits/:id</a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main>
+    <div class="page-header">
+      <h1>NCBA Bank Document API</h1>
+      <p>Mock REST API for Standing Orders, Stop Payment Notices, and Deposit Placements</p>
+      <div class="base-url">
+        <span>BASE URL</span>
+        <code>https://api.ncbabank.mock/v1</code>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ AUTH ═══════════════════ -->
+    <div class="section" id="auth">
+      <div class="section-header">
+        <div class="section-icon">🔐</div>
+        <h2>Authentication</h2>
+      </div>
+
+      <!-- POST /auth/login -->
+      <div class="endpoint open">
+        <div class="endpoint-header" onclick="toggle(this)">
+          <span class="method-badge method-POST">POST</span>
+          <span class="endpoint-path">/auth/login</span>
+          <span class="endpoint-desc">Authenticate user</span>
+          <span class="chevron">▶</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="tabs">
+            <button class="tab active" onclick="switchTab(this, 'login-headers')">Headers</button>
+            <button class="tab" onclick="switchTab(this, 'login-body')">Request Body</button>
+            <button class="tab" onclick="switchTab(this, 'login-resp')">Response</button>
+          </div>
+
+          <div class="tab-content active" id="login-headers">
+            <div class="label">Request Headers</div>
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button><span class="str">"Content-Type"</span><span class="key">: </span><span class="str">"application/json"</span>
+<span class="str">"Accept"</span><span class="key">: </span><span class="str">"application/json"</span>
+<span class="str">"X-Client-ID"</span><span class="key">: </span><span class="str">"ncba-web-portal-v1"</span></pre>
+          </div>
+
+          <div class="tab-content" id="login-body">
+            <div class="label">Fields</div>
+            <table class="fields-table">
+              <tr>
+                <th>Field</th>
+                <th>Type</th>
+                <th>Required</th>
+                <th>Description</th>
+              </tr>
+              <tr>
+                <td class="field-name">username</td>
+                <td class="field-type">string</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">Customer ID number or email</td>
+              </tr>
+              <tr>
+                <td class="field-name">password</td>
+                <td class="field-type">string</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">Account password</td>
+              </tr>
+              <tr>
+                <td class="field-name">mfa_code</td>
+                <td class="field-type">string</td>
+                <td class="field-opt">optional</td>
+                <td class="field-desc">6-digit OTP if MFA enabled</td>
+              </tr>
+            </table>
+            <div class="label">Example Body</div>
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button>{
+  <span class="key">"username"</span>: <span class="str">"john.mwangi@email.com"</span>,
+  <span class="key">"password"</span>: <span class="str">"Secure@1234"</span>,
+  <span class="key">"mfa_code"</span>: <span class="str">"482910"</span>
+}</pre>
+          </div>
+
+          <div class="tab-content" id="login-resp">
+            <div class="response-status"><span class="status-dot status-2xx"></span>200 OK</div>
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button>{
+  <span class="key">"status"</span>: <span class="str">"success"</span>,
+  <span class="key">"data"</span>: {
+    <span class="key">"access_token"</span>: <span class="str">"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c3ItMDAxMjM0IiwiaWF0IjoxNzA5MDAwMDAwfQ.sig"</span>,
+    <span class="key">"refresh_token"</span>: <span class="str">"rt_8f2a9c1d4e7b3f6a..."</span>,
+    <span class="key">"token_type"</span>: <span class="str">"Bearer"</span>,
+    <span class="key">"expires_in"</span>: <span class="num">3600</span>,
+    <span class="key">"user"</span>: {
+      <span class="key">"id"</span>: <span class="str">"usr-001234"</span>,
+      <span class="key">"name"</span>: <span class="str">"John Mwangi"</span>,
+      <span class="key">"email"</span>: <span class="str">"john.mwangi@email.com"</span>,
+      <span class="key">"branch"</span>: <span class="str">"Westlands Branch"</span>,
+      <span class="key">"roles"</span>: [<span class="str">"customer"</span>],
+      <span class="key">"mfa_enabled"</span>: <span class="bool">true</span>
+    }
+  }
+}</pre>
+            <div class="response-status" style="margin-top:1rem"><span class="status-dot status-401"></span>401
+              Unauthorized</div>
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button>{
+  <span class="key">"status"</span>: <span class="str">"error"</span>,
+  <span class="key">"code"</span>: <span class="str">"INVALID_CREDENTIALS"</span>,
+  <span class="key">"message"</span>: <span class="str">"Invalid username or password"</span>
+}</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- POST /auth/refresh -->
+      <div class="endpoint">
+        <div class="endpoint-header" onclick="toggle(this)">
+          <span class="method-badge method-POST">POST</span>
+          <span class="endpoint-path">/auth/refresh</span>
+          <span class="endpoint-desc">Refresh access token</span>
+          <span class="chevron">▶</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="tabs">
+            <button class="tab active" onclick="switchTab(this, 'refresh-body')">Request Body</button>
+            <button class="tab" onclick="switchTab(this, 'refresh-resp')">Response</button>
+          </div>
+          <div class="tab-content active" id="refresh-body">
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button>{
+  <span class="key">"refresh_token"</span>: <span class="str">"rt_8f2a9c1d4e7b3f6a..."</span>
+}</pre>
+          </div>
+          <div class="tab-content" id="refresh-resp">
+            <div class="response-status"><span class="status-dot status-2xx"></span>200 OK</div>
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button>{
+  <span class="key">"access_token"</span>: <span class="str">"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.new_token_here.sig"</span>,
+  <span class="key">"expires_in"</span>: <span class="num">3600</span>
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ USERS ═══════════════════ -->
+    <div class="section" id="users">
+      <div class="section-header">
+        <div class="section-icon">👤</div>
+        <h2>Users & Accounts</h2>
+      </div>
+
+      <div class="label" style="margin-bottom:1rem; color: var(--muted)">All endpoints below require: <code
+          style="color:var(--accent)">Authorization: Bearer &lt;access_token&gt;</code></div>
+
+      <!-- GET /users/me -->
+      <div class="endpoint">
+        <div class="endpoint-header" onclick="toggle(this)">
+          <span class="method-badge method-GET">GET</span>
+          <span class="endpoint-path">/users/me</span>
+          <span class="endpoint-desc">Get authenticated user</span>
+          <span class="auth-pill">🔒 auth required</span>
+          <span class="chevron">▶</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="tabs">
+            <button class="tab active" onclick="switchTab(this, 'me-headers')">Headers</button>
+            <button class="tab" onclick="switchTab(this, 'me-resp')">Response</button>
+          </div>
+          <div class="tab-content active" id="me-headers">
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button><span class="str">"Authorization"</span><span class="key">: </span><span class="str">"Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."</span>
+<span class="str">"Accept"</span><span class="key">: </span><span class="str">"application/json"</span></pre>
+          </div>
+          <div class="tab-content" id="me-resp">
+            <div class="response-status"><span class="status-dot status-2xx"></span>200 OK</div>
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button>{
+  <span class="key">"status"</span>: <span class="str">"success"</span>,
+  <span class="key">"data"</span>: {
+    <span class="key">"id"</span>: <span class="str">"usr-001234"</span>,
+    <span class="key">"name"</span>: <span class="str">"John Mwangi"</span>,
+    <span class="key">"email"</span>: <span class="str">"john.mwangi@email.com"</span>,
+    <span class="key">"id_number"</span>: <span class="str">"12345678"</span>,
+    <span class="key">"phone"</span>: <span class="str">"+254712345678"</span>,
+    <span class="key">"address"</span>: <span class="str">"P.O. Box 1234-00100, Nairobi"</span>,
+    <span class="key">"branch"</span>: <span class="str">"Westlands Branch"</span>,
+    <span class="key">"kyc_verified"</span>: <span class="bool">true</span>,
+    <span class="key">"accounts"</span>: [
+      { <span class="key">"account_number"</span>: <span class="str">"1234567890"</span>, <span class="key">"type"</span>: <span class="str">"Current"</span>, <span class="key">"currency"</span>: <span class="str">"KES"</span> },
+      { <span class="key">"account_number"</span>: <span class="str">"0987654321"</span>, <span class="key">"type"</span>: <span class="str">"Savings"</span>, <span class="key">"currency"</span>: <span class="str">"USD"</span> }
+    ]
+  }
+}</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- GET /accounts/:id -->
+      <div class="endpoint">
+        <div class="endpoint-header" onclick="toggle(this)">
+          <span class="method-badge method-GET">GET</span>
+          <span class="endpoint-path">/accounts/<em>:account_number</em></span>
+          <span class="endpoint-desc">Get account details & balance</span>
+          <span class="auth-pill">🔒 auth required</span>
+          <span class="chevron">▶</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="tabs">
+            <button class="tab active" onclick="switchTab(this, 'acc-resp')">Response</button>
+          </div>
+          <div class="tab-content active" id="acc-resp">
+            <div class="response-status"><span class="status-dot status-2xx"></span>200 OK</div>
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button>{
+  <span class="key">"status"</span>: <span class="str">"success"</span>,
+  <span class="key">"data"</span>: {
+    <span class="key">"account_number"</span>: <span class="str">"1234567890"</span>,
+    <span class="key">"account_name"</span>: <span class="str">"John Mwangi"</span>,
+    <span class="key">"account_type"</span>: <span class="str">"Current"</span>,
+    <span class="key">"currency"</span>: <span class="str">"KES"</span>,
+    <span class="key">"balance"</span>: <span class="num">458230.50</span>,
+    <span class="key">"available_balance"</span>: <span class="num">450000.00</span>,
+    <span class="key">"status"</span>: <span class="str">"active"</span>,
+    <span class="key">"branch"</span>: <span class="str">"Westlands"</span>
+  }
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ STANDING ORDERS ═══════════════════ -->
+    <div class="section" id="standing">
+      <div class="section-header">
+        <div class="section-icon">📋</div>
+        <h2>Standing Orders</h2>
+      </div>
+
+      <!-- POST /standing-orders -->
+      <div class="endpoint open">
+        <div class="endpoint-header" onclick="toggle(this)">
+          <span class="method-badge method-POST">POST</span>
+          <span class="endpoint-path">/standing-orders</span>
+          <span class="endpoint-desc">Create a new standing order</span>
+          <span class="auth-pill">🔒 auth required</span>
+          <span class="chevron">▶</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="tabs">
+            <button class="tab active" onclick="switchTab(this, 'so-headers')">Headers</button>
+            <button class="tab" onclick="switchTab(this, 'so-fields')">Fields</button>
+            <button class="tab" onclick="switchTab(this, 'so-body')">Request Body</button>
+            <button class="tab" onclick="switchTab(this, 'so-resp')">Response</button>
+          </div>
+
+          <div class="tab-content active" id="so-headers">
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button><span class="str">"Authorization"</span><span class="key">: </span><span class="str">"Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."</span>
+<span class="str">"Content-Type"</span><span class="key">: </span><span class="str">"application/json"</span>
+<span class="str">"Accept"</span><span class="key">: </span><span class="str">"application/json"</span>
+<span class="str">"X-Idempotency-Key"</span><span class="key">: </span><span class="str">"550e8400-e29b-41d4-a716-446655440000"</span>  <span class="comment">// prevent duplicate submissions</span></pre>
+          </div>
+
+          <div class="tab-content" id="so-fields">
+            <table class="fields-table">
+              <tr>
+                <th>Field</th>
+                <th>Type</th>
+                <th>Required</th>
+                <th>Description</th>
+              </tr>
+              <tr>
+                <td class="field-name">action</td>
+                <td class="field-type">enum</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">"new" | "amend" | "cancel"</td>
+              </tr>
+              <tr>
+                <td class="field-name">remitter.account_number</td>
+                <td class="field-type">string</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">Debit account number</td>
+              </tr>
+              <tr>
+                <td class="field-name">remitter.id_number</td>
+                <td class="field-type">string</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">ID or Passport number</td>
+              </tr>
+              <tr>
+                <td class="field-name">frequency</td>
+                <td class="field-type">enum</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">"once" | "monthly" | "quarterly" | "half-yearly" | "yearly" | "custom"</td>
+              </tr>
+              <tr>
+                <td class="field-name">first_payment_date</td>
+                <td class="field-type">date</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">Format: YYYY-MM-DD</td>
+              </tr>
+              <tr>
+                <td class="field-name">regular_payment_date</td>
+                <td class="field-type">integer</td>
+                <td class="field-opt">optional</td>
+                <td class="field-desc">Day of month (1–28)</td>
+              </tr>
+              <tr>
+                <td class="field-name">last_payment_date</td>
+                <td class="field-type">date</td>
+                <td class="field-opt">optional</td>
+                <td class="field-desc">Format: YYYY-MM-DD</td>
+              </tr>
+              <tr>
+                <td class="field-name">currency</td>
+                <td class="field-type">string</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">ISO 4217 (e.g. "KES", "USD")</td>
+              </tr>
+              <tr>
+                <td class="field-name">amount</td>
+                <td class="field-type">number</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">Amount in figures</td>
+              </tr>
+              <tr>
+                <td class="field-name">amount_words</td>
+                <td class="field-type">string</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">Amount written in words</td>
+              </tr>
+              <tr>
+                <td class="field-name">remittance_mode</td>
+                <td class="field-type">enum</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">"telegraphic_transfer" | "bankers_draft"</td>
+              </tr>
+              <tr>
+                <td class="field-name">beneficiary.bank_name</td>
+                <td class="field-type">string</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">Beneficiary's bank name</td>
+              </tr>
+              <tr>
+                <td class="field-name">beneficiary.swift_code</td>
+                <td class="field-type">string</td>
+                <td class="field-opt">optional*</td>
+                <td class="field-desc">Required for TT transfers</td>
+              </tr>
+              <tr>
+                <td class="field-name">beneficiary.name</td>
+                <td class="field-type">string</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">Beneficiary full name</td>
+              </tr>
+              <tr>
+                <td class="field-name">beneficiary.account_number</td>
+                <td class="field-type">string</td>
+                <td class="field-opt">optional*</td>
+                <td class="field-desc">Required for TT transfers</td>
+              </tr>
+              <tr>
+                <td class="field-name">charge_type</td>
+                <td class="field-type">enum</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">"SHA" | "OUR" | "BEN"</td>
+              </tr>
+              <tr>
+                <td class="field-name">details_of_payment</td>
+                <td class="field-type">string</td>
+                <td class="field-opt">optional</td>
+                <td class="field-desc">Narrative / reference</td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="tab-content" id="so-body">
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button>{
+  <span class="key">"action"</span>: <span class="str">"new"</span>,
+  <span class="key">"remitter"</span>: {
+    <span class="key">"account_name"</span>: <span class="str">"John Mwangi"</span>,
+    <span class="key">"account_number"</span>: <span class="str">"1234567890"</span>,
+    <span class="key">"id_number"</span>: <span class="str">"12345678"</span>,
+    <span class="key">"telephone"</span>: <span class="str">"+254712345678"</span>,
+    <span class="key">"address"</span>: <span class="str">"P.O. Box 1234-00100, Nairobi"</span>
+  },
+  <span class="key">"frequency"</span>: <span class="str">"monthly"</span>,
+  <span class="key">"first_payment_date"</span>: <span class="str">"2026-03-01"</span>,
+  <span class="key">"regular_payment_date"</span>: <span class="num">1</span>,
+  <span class="key">"last_payment_date"</span>: <span class="str">"2027-03-01"</span>,
+  <span class="key">"currency"</span>: <span class="str">"KES"</span>,
+  <span class="key">"amount"</span>: <span class="num">50000.00</span>,
+  <span class="key">"amount_words"</span>: <span class="str">"Fifty Thousand Kenya Shillings"</span>,
+  <span class="key">"remittance_mode"</span>: <span class="str">"telegraphic_transfer"</span>,
+  <span class="key">"beneficiary"</span>: {
+    <span class="key">"bank_name"</span>: <span class="str">"Equity Bank Kenya"</span>,
+    <span class="key">"bank_address"</span>: <span class="str">"Hospital Road, Nairobi"</span>,
+    <span class="key">"bank_country"</span>: <span class="str">"KE"</span>,
+    <span class="key">"swift_code"</span>: <span class="str">"EQBLKENA"</span>,
+    <span class="key">"name"</span>: <span class="str">"Jane Otieno"</span>,
+    <span class="key">"physical_address"</span>: <span class="str">"Moi Avenue, Nairobi"</span>,
+    <span class="key">"country"</span>: <span class="str">"KE"</span>,
+    <span class="key">"account_number"</span>: <span class="str">"0200123456789"</span>
+  },
+  <span class="key">"charge_type"</span>: <span class="str">"SHA"</span>,
+  <span class="key">"details_of_payment"</span>: <span class="str">"Monthly rent payment - Apt 4B"</span>
+}</pre>
+          </div>
+
+          <div class="tab-content" id="so-resp">
+            <div class="response-status"><span class="status-dot status-2xx"></span>201 Created</div>
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button>{
+  <span class="key">"status"</span>: <span class="str">"success"</span>,
+  <span class="key">"data"</span>: {
+    <span class="key">"id"</span>: <span class="str">"so-20260222-00891"</span>,
+    <span class="key">"reference_number"</span>: <span class="str">"NCB/SO/2026/00891"</span>,
+    <span class="key">"action"</span>: <span class="str">"new"</span>,
+    <span class="key">"status"</span>: <span class="str">"pending_authorization"</span>,
+    <span class="key">"created_at"</span>: <span class="str">"2026-02-22T09:30:00Z"</span>,
+    <span class="key">"next_payment_date"</span>: <span class="str">"2026-03-01"</span>,
+    <span class="key">"amount"</span>: <span class="num">50000.00</span>,
+    <span class="key">"currency"</span>: <span class="str">"KES"</span>,
+    <span class="key">"beneficiary_name"</span>: <span class="str">"Jane Otieno"</span>
+  },
+  <span class="key">"message"</span>: <span class="str">"Standing order submitted for authorization"</span>
+}</pre>
+            <div class="response-status" style="margin-top:1rem"><span class="status-dot status-4xx"></span>422
+              Unprocessable</div>
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button>{
+  <span class="key">"status"</span>: <span class="str">"error"</span>,
+  <span class="key">"code"</span>: <span class="str">"INSUFFICIENT_FUNDS"</span>,
+  <span class="key">"message"</span>: <span class="str">"Account balance insufficient for this standing order amount"</span>,
+  <span class="key">"errors"</span>: [
+    { <span class="key">"field"</span>: <span class="str">"amount"</span>, <span class="key">"message"</span>: <span class="str">"Exceeds available balance of KES 450,000.00"</span> }
+  ]
+}</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- GET /standing-orders -->
+      <div class="endpoint">
+        <div class="endpoint-header" onclick="toggle(this)">
+          <span class="method-badge method-GET">GET</span>
+          <span class="endpoint-path">/standing-orders</span>
+          <span class="endpoint-desc">List all standing orders</span>
+          <span class="auth-pill">🔒 auth required</span>
+          <span class="chevron">▶</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="tabs">
+            <button class="tab active" onclick="switchTab(this, 'sol-query')">Query Params</button>
+            <button class="tab" onclick="switchTab(this, 'sol-resp')">Response</button>
+          </div>
+          <div class="tab-content active" id="sol-query">
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button>GET /standing-orders?status=active&page=1&limit=20&currency=KES
+
+<span class="comment">// Query Parameters:
+// status     : "active" | "pending_authorization" | "cancelled" | "completed"
+// currency   : ISO 4217 currency code
+// page       : integer (default: 1)
+// limit      : integer 1–100 (default: 20)</span></pre>
+          </div>
+          <div class="tab-content" id="sol-resp">
+            <div class="response-status"><span class="status-dot status-2xx"></span>200 OK</div>
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button>{
+  <span class="key">"status"</span>: <span class="str">"success"</span>,
+  <span class="key">"data"</span>: [
+    {
+      <span class="key">"id"</span>: <span class="str">"so-20260222-00891"</span>,
+      <span class="key">"reference_number"</span>: <span class="str">"NCB/SO/2026/00891"</span>,
+      <span class="key">"status"</span>: <span class="str">"active"</span>,
+      <span class="key">"amount"</span>: <span class="num">50000.00</span>,
+      <span class="key">"currency"</span>: <span class="str">"KES"</span>,
+      <span class="key">"frequency"</span>: <span class="str">"monthly"</span>,
+      <span class="key">"beneficiary_name"</span>: <span class="str">"Jane Otieno"</span>,
+      <span class="key">"next_payment_date"</span>: <span class="str">"2026-03-01"</span>
+    }
+  ],
+  <span class="key">"pagination"</span>: {
+    <span class="key">"total"</span>: <span class="num">1</span>, <span class="key">"page"</span>: <span class="num">1</span>, <span class="key">"limit"</span>: <span class="num">20</span>, <span class="key">"pages"</span>: <span class="num">1</span>
+  }
+}</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- PUT /standing-orders/:id (amend) -->
+      <div class="endpoint">
+        <div class="endpoint-header" onclick="toggle(this)">
+          <span class="method-badge method-PUT">PUT</span>
+          <span class="endpoint-path">/standing-orders/<em>:id</em></span>
+          <span class="endpoint-desc">Amend a standing order</span>
+          <span class="auth-pill">🔒 auth required</span>
+          <span class="chevron">▶</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="tabs">
+            <button class="tab active" onclick="switchTab(this, 'soa-body')">Request Body</button>
+            <button class="tab" onclick="switchTab(this, 'soa-resp')">Response</button>
+          </div>
+          <div class="tab-content active" id="soa-body">
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button>{
+  <span class="key">"action"</span>: <span class="str">"amend"</span>,
+  <span class="key">"amount"</span>: <span class="num">75000.00</span>,
+  <span class="key">"amount_words"</span>: <span class="str">"Seventy Five Thousand Kenya Shillings"</span>,
+  <span class="key">"last_payment_date"</span>: <span class="str">"2028-03-01"</span>,
+  <span class="key">"details_of_payment"</span>: <span class="str">"Updated rent - Apt 4B"</span>
+}</pre>
+          </div>
+          <div class="tab-content" id="soa-resp">
+            <div class="response-status"><span class="status-dot status-2xx"></span>200 OK</div>
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button>{
+  <span class="key">"status"</span>: <span class="str">"success"</span>,
+  <span class="key">"data"</span>: {
+    <span class="key">"id"</span>: <span class="str">"so-20260222-00891"</span>,
+    <span class="key">"status"</span>: <span class="str">"pending_authorization"</span>,
+    <span class="key">"amended_at"</span>: <span class="str">"2026-02-22T11:00:00Z"</span>
+  },
+  <span class="key">"message"</span>: <span class="str">"Amendment submitted for authorization"</span>
+}</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- DELETE /standing-orders/:id -->
+      <div class="endpoint">
+        <div class="endpoint-header" onclick="toggle(this)">
+          <span class="method-badge method-DELETE">DEL</span>
+          <span class="endpoint-path">/standing-orders/<em>:id</em></span>
+          <span class="endpoint-desc">Cancel a standing order</span>
+          <span class="auth-pill">🔒 auth required</span>
+          <span class="chevron">▶</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="tabs">
+            <button class="tab active" onclick="switchTab(this, 'sod-resp')">Response</button>
+          </div>
+          <div class="tab-content active" id="sod-resp">
+            <div class="response-status"><span class="status-dot status-2xx"></span>200 OK</div>
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button>{
+  <span class="key">"status"</span>: <span class="str">"success"</span>,
+  <span class="key">"data"</span>: {
+    <span class="key">"id"</span>: <span class="str">"so-20260222-00891"</span>,
+    <span class="key">"status"</span>: <span class="str">"cancelled"</span>,
+    <span class="key">"cancelled_at"</span>: <span class="str">"2026-02-22T12:00:00Z"</span>
+  },
+  <span class="key">"message"</span>: <span class="str">"Standing order cancelled successfully"</span>
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ STOP PAYMENT ═══════════════════ -->
+    <div class="section" id="stop">
+      <div class="section-header">
+        <div class="section-icon">🛑</div>
+        <h2>Stop Payment Notice</h2>
+      </div>
+
+      <!-- POST /stop-payments -->
+      <div class="endpoint open">
+        <div class="endpoint-header" onclick="toggle(this)">
+          <span class="method-badge method-POST">POST</span>
+          <span class="endpoint-path">/stop-payments</span>
+          <span class="endpoint-desc">Submit a stop payment notice</span>
+          <span class="auth-pill">🔒 auth required</span>
+          <span class="chevron">▶</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="tabs">
+            <button class="tab active" onclick="switchTab(this, 'sp-headers')">Headers</button>
+            <button class="tab" onclick="switchTab(this, 'sp-fields')">Fields</button>
+            <button class="tab" onclick="switchTab(this, 'sp-body')">Request Body</button>
+            <button class="tab" onclick="switchTab(this, 'sp-resp')">Response</button>
+          </div>
+
+          <div class="tab-content active" id="sp-headers">
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button><span class="str">"Authorization"</span><span class="key">: </span><span class="str">"Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."</span>
+<span class="str">"Content-Type"</span><span class="key">: </span><span class="str">"application/json"</span>
+<span class="str">"Accept"</span><span class="key">: </span><span class="str">"application/json"</span>
+<span class="str">"X-Idempotency-Key"</span><span class="key">: </span><span class="str">"c4d2a1e0-9f8b-47c3-b5d6-112233445566"</span></pre>
+          </div>
+
+          <div class="tab-content" id="sp-fields">
+            <table class="fields-table">
+              <tr>
+                <th>Field</th>
+                <th>Type</th>
+                <th>Required</th>
+                <th>Description</th>
+              </tr>
+              <tr>
+                <td class="field-name">branch</td>
+                <td class="field-type">string</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">Branch / Service Centre name</td>
+              </tr>
+              <tr>
+                <td class="field-name">account_number</td>
+                <td class="field-type">string</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">Account to stop payment from</td>
+              </tr>
+              <tr>
+                <td class="field-name">account_name</td>
+                <td class="field-type">string</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">Name on the account</td>
+              </tr>
+              <tr>
+                <td class="field-name">cheque_number_from</td>
+                <td class="field-type">string</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">First cheque number in range</td>
+              </tr>
+              <tr>
+                <td class="field-name">cheque_number_to</td>
+                <td class="field-type">string</td>
+                <td class="field-opt">optional</td>
+                <td class="field-desc">Last cheque in range (if multiple)</td>
+              </tr>
+              <tr>
+                <td class="field-name">cheque_date</td>
+                <td class="field-type">date</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">Date on the cheque (YYYY-MM-DD)</td>
+              </tr>
+              <tr>
+                <td class="field-name">amount</td>
+                <td class="field-type">number</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">Amount on cheque in KES</td>
+              </tr>
+              <tr>
+                <td class="field-name">in_favor_of</td>
+                <td class="field-type">string</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">Payee name on the cheque</td>
+              </tr>
+              <tr>
+                <td class="field-name">reason</td>
+                <td class="field-type">string</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">Reason for stop payment request</td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="tab-content" id="sp-body">
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button>{
+  <span class="key">"branch"</span>: <span class="str">"Westlands Service Centre"</span>,
+  <span class="key">"account_number"</span>: <span class="str">"1234567890"</span>,
+  <span class="key">"account_name"</span>: <span class="str">"John Mwangi"</span>,
+  <span class="key">"cheque_number_from"</span>: <span class="str">"000451"</span>,
+  <span class="key">"cheque_number_to"</span>: <span class="str">"000451"</span>,
+  <span class="key">"cheque_date"</span>: <span class="str">"2026-02-18"</span>,
+  <span class="key">"amount"</span>: <span class="num">15000.00</span>,
+  <span class="key">"in_favor_of"</span>: <span class="str">"ABC Supplies Ltd"</span>,
+  <span class="key">"reason"</span>: <span class="str">"Cheque lost in transit — replacement issued"</span>
+}</pre>
+          </div>
+
+          <div class="tab-content" id="sp-resp">
+            <div class="response-status"><span class="status-dot status-2xx"></span>201 Created</div>
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button>{
+  <span class="key">"status"</span>: <span class="str">"success"</span>,
+  <span class="key">"data"</span>: {
+    <span class="key">"id"</span>: <span class="str">"spn-20260222-00442"</span>,
+    <span class="key">"reference_number"</span>: <span class="str">"NCB/SPN/2026/00442"</span>,
+    <span class="key">"status"</span>: <span class="str">"processing"</span>,
+    <span class="key">"cheque_number_from"</span>: <span class="str">"000451"</span>,
+    <span class="key">"cheque_number_to"</span>: <span class="str">"000451"</span>,
+    <span class="key">"amount"</span>: <span class="num">15000.00</span>,
+    <span class="key">"created_at"</span>: <span class="str">"2026-02-22T10:15:00Z"</span>,
+    <span class="key">"estimated_completion"</span>: <span class="str">"2026-02-22T12:15:00Z"</span>
+  },
+  <span class="key">"message"</span>: <span class="str">"Stop payment notice received and is being processed"</span>
+}</pre>
+            <div class="response-status" style="margin-top:1rem"><span class="status-dot status-4xx"></span>409 Conflict
+            </div>
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button>{
+  <span class="key">"status"</span>: <span class="str">"error"</span>,
+  <span class="key">"code"</span>: <span class="str">"CHEQUE_ALREADY_PAID"</span>,
+  <span class="key">"message"</span>: <span class="str">"Cheque 000451 has already been processed and paid. Stop payment cannot be applied."</span>
+}</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- GET /stop-payments/:id -->
+      <div class="endpoint">
+        <div class="endpoint-header" onclick="toggle(this)">
+          <span class="method-badge method-GET">GET</span>
+          <span class="endpoint-path">/stop-payments/<em>:id</em></span>
+          <span class="endpoint-desc">Get stop payment status</span>
+          <span class="auth-pill">🔒 auth required</span>
+          <span class="chevron">▶</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="tabs">
+            <button class="tab active" onclick="switchTab(this, 'spg-resp')">Response</button>
+          </div>
+          <div class="tab-content active" id="spg-resp">
+            <div class="response-status"><span class="status-dot status-2xx"></span>200 OK</div>
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button>{
+  <span class="key">"status"</span>: <span class="str">"success"</span>,
+  <span class="key">"data"</span>: {
+    <span class="key">"id"</span>: <span class="str">"spn-20260222-00442"</span>,
+    <span class="key">"reference_number"</span>: <span class="str">"NCB/SPN/2026/00442"</span>,
+    <span class="key">"status"</span>: <span class="str">"confirmed"</span>,
+    <span class="key">"cheque_number_from"</span>: <span class="str">"000451"</span>,
+    <span class="key">"amount"</span>: <span class="num">15000.00</span>,
+    <span class="key">"in_favor_of"</span>: <span class="str">"ABC Supplies Ltd"</span>,
+    <span class="key">"verified_by"</span>: <span class="str">"Sarah Kamau"</span>,
+    <span class="key">"authorized_by"</span>: <span class="str">"Michael Njuguna"</span>,
+    <span class="key">"verified_at"</span>: <span class="str">"2026-02-22T11:00:00Z"</span>,
+    <span class="key">"authorized_at"</span>: <span class="str">"2026-02-22T11:30:00Z"</span>
+  }
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ DEPOSITS ═══════════════════ -->
+    <div class="section" id="deposit">
+      <div class="section-header">
+        <div class="section-icon">🏦</div>
+        <h2>Deposit Placement</h2>
+      </div>
+
+      <!-- POST /deposits -->
+      <div class="endpoint open">
+        <div class="endpoint-header" onclick="toggle(this)">
+          <span class="method-badge method-POST">POST</span>
+          <span class="endpoint-path">/deposits</span>
+          <span class="endpoint-desc">Place a new deposit</span>
+          <span class="auth-pill">🔒 auth required</span>
+          <span class="chevron">▶</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="tabs">
+            <button class="tab active" onclick="switchTab(this, 'dep-headers')">Headers</button>
+            <button class="tab" onclick="switchTab(this, 'dep-fields')">Fields</button>
+            <button class="tab" onclick="switchTab(this, 'dep-body')">Request Body</button>
+            <button class="tab" onclick="switchTab(this, 'dep-resp')">Response</button>
+          </div>
+
+          <div class="tab-content active" id="dep-headers">
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button><span class="str">"Authorization"</span><span class="key">: </span><span class="str">"Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."</span>
+<span class="str">"Content-Type"</span><span class="key">: </span><span class="str">"application/json"</span>
+<span class="str">"Accept"</span><span class="key">: </span><span class="str">"application/json"</span>
+<span class="str">"X-Idempotency-Key"</span><span class="key">: </span><span class="str">"a9b8c7d6-e5f4-3a2b-1c0d-998877665544"</span></pre>
+          </div>
+
+          <div class="tab-content" id="dep-fields">
+            <table class="fields-table">
+              <tr>
+                <th>Field</th>
+                <th>Type</th>
+                <th>Required</th>
+                <th>Description</th>
+              </tr>
+              <tr>
+                <td class="field-name">customer_name</td>
+                <td class="field-type">string</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">Name of customer placing deposit</td>
+              </tr>
+              <tr>
+                <td class="field-name">debit_account_number</td>
+                <td class="field-type">string</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">Account to debit for placement</td>
+              </tr>
+              <tr>
+                <td class="field-name">currency</td>
+                <td class="field-type">string</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">ISO 4217 (KES, USD, EUR, GBP)</td>
+              </tr>
+              <tr>
+                <td class="field-name">amount</td>
+                <td class="field-type">number</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">Deposit amount in figures</td>
+              </tr>
+              <tr>
+                <td class="field-name">amount_words</td>
+                <td class="field-type">string</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">Amount in words</td>
+              </tr>
+              <tr>
+                <td class="field-name">deposit_type</td>
+                <td class="field-type">enum</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">"call_deposit" | "fixed_deposit" | "high_yield_fd"</td>
+              </tr>
+              <tr>
+                <td class="field-name">activity_type</td>
+                <td class="field-type">enum</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">"new" | "rollover"</td>
+              </tr>
+              <tr>
+                <td class="field-name">term_days</td>
+                <td class="field-type">integer</td>
+                <td class="field-opt">optional*</td>
+                <td class="field-desc">Required for fixed_deposit & high_yield_fd</td>
+              </tr>
+              <tr>
+                <td class="field-name">rate</td>
+                <td class="field-type">number</td>
+                <td class="field-opt">optional</td>
+                <td class="field-desc">Agreed rate %. Leave empty for bank to confirm</td>
+              </tr>
+              <tr>
+                <td class="field-name">auto_renew</td>
+                <td class="field-type">boolean</td>
+                <td class="field-opt">optional</td>
+                <td class="field-desc">Auto-renew on maturity (default: true)</td>
+              </tr>
+              <tr>
+                <td class="field-name">witness_name</td>
+                <td class="field-type">string</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">Witness name for acceptance</td>
+              </tr>
+              <tr>
+                <td class="field-name">accepted_terms</td>
+                <td class="field-type">boolean</td>
+                <td class="field-req">required</td>
+                <td class="field-desc">Must be true — GTC acceptance</td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="tab-content" id="dep-body">
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button>{
+  <span class="key">"customer_name"</span>: <span class="str">"John Mwangi"</span>,
+  <span class="key">"debit_account_number"</span>: <span class="str">"1234567890"</span>,
+  <span class="key">"currency"</span>: <span class="str">"KES"</span>,
+  <span class="key">"amount"</span>: <span class="num">1000000.00</span>,
+  <span class="key">"amount_words"</span>: <span class="str">"One Million Kenya Shillings"</span>,
+  <span class="key">"deposit_type"</span>: <span class="str">"fixed_deposit"</span>,
+  <span class="key">"activity_type"</span>: <span class="str">"new"</span>,
+  <span class="key">"term_days"</span>: <span class="num">90</span>,
+  <span class="key">"rate"</span>: <span class="num">9.5</span>,
+  <span class="key">"auto_renew"</span>: <span class="bool">true</span>,
+  <span class="key">"witness_name"</span>: <span class="str">"Grace Achieng"</span>,
+  <span class="key">"accepted_terms"</span>: <span class="bool">true</span>,
+  <span class="key">"requestors"</span>: [
+    { <span class="key">"name"</span>: <span class="str">"John Mwangi"</span>, <span class="key">"role"</span>: <span class="str">"primary"</span> }
+  ]
+}</pre>
+          </div>
+
+          <div class="tab-content" id="dep-resp">
+            <div class="response-status"><span class="status-dot status-2xx"></span>201 Created</div>
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button>{
+  <span class="key">"status"</span>: <span class="str">"success"</span>,
+  <span class="key">"data"</span>: {
+    <span class="key">"id"</span>: <span class="str">"dep-20260222-01045"</span>,
+    <span class="key">"deposit_account_number"</span>: <span class="str">"FD-9900123456"</span>,
+    <span class="key">"reference_number"</span>: <span class="str">"NCB/FD/2026/01045"</span>,
+    <span class="key">"status"</span>: <span class="str">"pending_confirmation"</span>,
+    <span class="key">"deposit_type"</span>: <span class="str">"fixed_deposit"</span>,
+    <span class="key">"currency"</span>: <span class="str">"KES"</span>,
+    <span class="key">"principal_amount"</span>: <span class="num">1000000.00</span>,
+    <span class="key">"confirmed_rate"</span>: <span class="num">9.5</span>,
+    <span class="key">"term_days"</span>: <span class="num">90</span>,
+    <span class="key">"value_date"</span>: <span class="str">"2026-02-24"</span>,
+    <span class="key">"maturity_date"</span>: <span class="str">"2026-05-25"</span>,
+    <span class="key">"expected_interest"</span>: <span class="num">23424.66</span>,
+    <span class="key">"created_at"</span>: <span class="str">"2026-02-22T09:00:00Z"</span>,
+    <span class="key">"auto_renew"</span>: <span class="bool">true</span>
+  },
+  <span class="key">"message"</span>: <span class="str">"Deposit placement submitted for processing. You will be notified upon confirmation."</span>
+}</pre>
+            <div class="response-status" style="margin-top:1rem"><span class="status-dot status-4xx"></span>400 Bad
+              Request</div>
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button>{
+  <span class="key">"status"</span>: <span class="str">"error"</span>,
+  <span class="key">"code"</span>: <span class="str">"TERMS_NOT_ACCEPTED"</span>,
+  <span class="key">"message"</span>: <span class="str">"Customer must accept General Terms and Conditions to proceed"</span>,
+  <span class="key">"errors"</span>: [
+    { <span class="key">"field"</span>: <span class="str">"accepted_terms"</span>, <span class="key">"message"</span>: <span class="str">"Must be true"</span> }
+  ]
+}</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- GET /deposits/:id -->
+      <div class="endpoint">
+        <div class="endpoint-header" onclick="toggle(this)">
+          <span class="method-badge method-GET">GET</span>
+          <span class="endpoint-path">/deposits/<em>:id</em></span>
+          <span class="endpoint-desc">Get deposit details</span>
+          <span class="auth-pill">🔒 auth required</span>
+          <span class="chevron">▶</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="tabs">
+            <button class="tab active" onclick="switchTab(this, 'depg-resp')">Response</button>
+          </div>
+          <div class="tab-content active" id="depg-resp">
+            <div class="response-status"><span class="status-dot status-2xx"></span>200 OK</div>
+            <pre><button class="copy-btn" onclick="copyCode(this)">COPY</button>{
+  <span class="key">"status"</span>: <span class="str">"success"</span>,
+  <span class="key">"data"</span>: {
+    <span class="key">"id"</span>: <span class="str">"dep-20260222-01045"</span>,
+    <span class="key">"deposit_account_number"</span>: <span class="str">"FD-9900123456"</span>,
+    <span class="key">"status"</span>: <span class="str">"active"</span>,
+    <span class="key">"deposit_type"</span>: <span class="str">"fixed_deposit"</span>,
+    <span class="key">"currency"</span>: <span class="str">"KES"</span>,
+    <span class="key">"principal_amount"</span>: <span class="num">1000000.00</span>,
+    <span class="key">"rate"</span>: <span class="num">9.5</span>,
+    <span class="key">"term_days"</span>: <span class="num">90</span>,
+    <span class="key">"value_date"</span>: <span class="str">"2026-02-24"</span>,
+    <span class="key">"maturity_date"</span>: <span class="str">"2026-05-25"</span>,
+    <span class="key">"accrued_interest"</span>: <span class="num">3890.41</span>,
+    <span class="key">"withholding_tax"</span>: <span class="num">583.56</span>,
+    <span class="key">"net_interest"</span>: <span class="num">3306.85</span>,
+    <span class="key">"auto_renew"</span>: <span class="bool">true</span>,
+    <span class="key">"inputter"</span>: <span class="str">"Nancy Wanjiku"</span>,
+    <span class="key">"authorized_by"</span>: <span class="str">"Peter Kamande"</span>,
+    <span class="key">"received_branch"</span>: <span class="str">"Westlands Branch"</span>
+  }
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function toggle(header) {
+      const endpoint = header.parentElement;
+      endpoint.classList.toggle('open');
+    }
+
+    function switchTab(btn, targetId) {
+      const body = btn.closest('.endpoint-body');
+      body.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      body.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(targetId).classList.add('active');
+    }
+
+    function copyCode(btn) {
+      const pre = btn.parentElement;
+      const text = pre.innerText.replace('COPY\n', '').replace('COPY', '').trim();
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'COPIED!';
+        btn.style.color = 'var(--accent)';
+        setTimeout(() => { btn.textContent = 'COPY'; btn.style.color = ''; }, 1800);
+      });
+    }
+  </script>
+</body>
+
+</html>

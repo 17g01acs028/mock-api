@@ -1,0 +1,2964 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NCBA Admin Portal</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #09090b;
+      --surface: #121214;
+      --surface2: #1c1c1f;
+      --surface-hover: #27272a;
+      --border: #27272a;
+      --border-hover: #3f3f46;
+
+      --accent: #10b981;
+      --accent-hover: #059669;
+      --accent-glow: rgba(16, 185, 129, 0.2);
+
+      --text: #f4f4f5;
+      --muted: #a1a1aa;
+
+      --green: #10b981;
+      --red: #ef4444;
+      --blue: #3b82f6;
+      --orange: #f59e0b;
+
+      --radius: 8px;
+      --shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+      --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── LOGIN ── */
+    #login-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: radial-gradient(circle at top, var(--surface2) 0%, var(--bg) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 3rem;
+      width: 380px;
+      box-shadow: var(--shadow);
+    }
+
+    .login-brand {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .login-brand .brandmark {
+      width: 48px;
+      height: 48px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-size: 20px;
+      margin-bottom: 1rem;
+      box-shadow: var(--accent-glow) 0 0 20px;
+    }
+
+    .login-brand h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .login-brand p {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 6px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* ── LAYOUT ── */
+    #app {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+    }
+
+    header {
+      background: rgba(18, 18, 20, 0.8);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      height: 56px;
+      display: flex;
+      align-items: center;
+      padding: 0 1.5rem;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      flex: 1;
+      font-weight: 700;
+    }
+
+    .hdr-badge {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 3px 10px;
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .hdr-user {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .hdr-avatar {
+      width: 28px;
+      height: 28px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .btn-hdr {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 11px;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .btn-hdr:hover {
+      background: var(--surface2);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .body-wrap {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── SIDEBAR ── */
+    aside {
+      width: 240px;
+      min-width: 240px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 1.5rem 0;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .nav-group-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 1.25rem 1.25rem 0.5rem;
+    }
+
+    .nav-group-label:first-child {
+      padding-top: 0;
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 1.25rem;
+      cursor: pointer;
+      font-size: 12px;
+      color: #a1a1aa;
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+      transition: all 0.2s;
+      border-left: 2px solid transparent;
+    }
+
+    .nav-btn .ico {
+      width: 20px;
+      text-align: center;
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    .nav-btn:hover {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    .nav-btn:hover .ico {
+      opacity: 1;
+    }
+
+    .nav-btn.active {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--accent);
+      border-left-color: var(--accent);
+      font-weight: 500;
+    }
+
+    .nav-btn.active .ico {
+      color: var(--accent);
+      opacity: 1;
+    }
+
+    .nav-count {
+      margin-left: auto;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2px 8px;
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .nav-btn.active .nav-count {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #000;
+    }
+
+    /* ── CONTENT ── */
+    .content {
+      flex: 1;
+      padding: 2.5rem;
+      overflow-y: auto;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .page {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .pg-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2.5rem;
+    }
+
+    .pg-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.75rem;
+      color: var(--text);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .pg-sub {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* ── STATS ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+    }
+
+    .stat.navy::before {
+      background: var(--text);
+    }
+
+    .stat.gold::before {
+      background: var(--orange);
+    }
+
+    .stat.green::before {
+      background: var(--green);
+    }
+
+    .stat.blue::before {
+      background: var(--blue);
+    }
+
+    .stat-n {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.25rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .stat-l {
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 8px;
+      font-weight: 600;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(28, 28, 31, 0.5);
+    }
+
+    .card-header h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    /* ── TABLE ── */
+    /* ── MOCK STUDIO ── */
+    .studio-wrap {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      height: calc(100vh - 120px);
+      gap: 1px;
+      background: var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .studio-side {
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .studio-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .studio-item {
+      padding: 12px 20px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .studio-item:hover {
+      background: var(--surface2);
+    }
+
+    .studio-item.active {
+      background: rgba(16, 185, 129, 0.1);
+      border-left: 3px solid var(--accent);
+    }
+
+    .studio-item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .studio-item-name {
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .studio-item-path {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: monospace;
+    }
+
+    .studio-main {
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .studio-header {
+      padding: 15px 25px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface2);
+    }
+
+    .studio-tabs {
+      display: flex;
+      gap: 5px;
+      padding: 10px 25px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab-btn {
+      padding: 6px 16px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-radius: 4px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    .studio-content {
+      flex: 1;
+      padding: 25px;
+      overflow-y: auto;
+    }
+
+    .code-editor-wrap {
+      background: #18181b;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 15px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .code-editor {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #10b981;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      resize: none;
+      outline: none;
+      width: 100%;
+    }
+
+    .rule-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+
+    .rule-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .cond-row {
+      display: grid;
+      grid-template-columns: 100px 120px 120px 1fr 40px;
+      gap: 8px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+
+    .tbl-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .v-input {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 4px;
+      padding: 6px 10px;
+      width: 100%;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+
+    .v-input:focus {
+      border-color: var(--emerald);
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+    }
+
+    th {
+      text-align: left;
+      padding: 12px 16px;
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      vertical-align: middle;
+      transition: background 0.15s;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: var(--surface-hover);
+    }
+
+    .td-mono {
+      color: var(--text);
+    }
+
+    .td-muted {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 2px;
+    }
+
+    strong {
+      font-weight: 600;
+    }
+
+    /* ── BADGES ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .badge-active {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--green);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge-inactive {
+      background: rgba(161, 161, 170, 0.15);
+      color: var(--muted);
+      border: 1px solid rgba(161, 161, 170, 0.3);
+    }
+
+    .badge-pending {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--orange);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .badge-verified {
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--blue);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .badge-closed,
+    .badge-cancelled {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--red);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .badge-deposit {
+      background: rgba(139, 92, 246, 0.15);
+      color: #a78bfa;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+
+    .badge-withdrawable {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--green);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 11px;
+    }
+
+    .btn-secondary {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-hover);
+      border-color: var(--border-hover);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--red);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    /* ── FORMS ── */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .form-group label .req {
+      color: var(--red);
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 13px;
+      padding: 10px 14px;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    input:hover,
+    select:hover,
+    textarea:hover {
+      border-color: var(--border-hover);
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+      background: var(--surface);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #52525b;
+    }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+      appearance: none;
+      cursor: pointer;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    .form-hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+      animation: fadeIn 0.2s;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 640px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+      transform: translateY(10px);
+      animation: slideUp 0.3s forwards;
+    }
+
+    @keyframes slideUp {
+      to {
+        transform: translateY(0);
+      }
+    }
+
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(18, 18, 20, 0.9);
+      border-radius: 12px 12px 0 0;
+    }
+
+    .modal-header h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+
+    .modal-footer {
+      padding: 1.25rem 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      background: var(--surface2);
+      border-radius: 0 0 12px 12px;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--muted);
+      padding: 0 6px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      line-height: 1;
+    }
+
+    .close-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+    }
+
+    /* ── SECTION DIVIDER ── */
+    .sec-div {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 1.75rem 0 1rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sec-div::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── EMPTY STATE ── */
+    .empty {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--muted);
+    }
+
+    .empty .empty-ico {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .empty h3 {
+      font-size: 14px;
+      color: var(--text);
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 1000;
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: var(--shadow);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 300px;
+    }
+
+    #toast::before {
+      content: '✓';
+      color: var(--accent);
+      font-weight: border;
+      font-size: 16px;
+    }
+
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    #toast.err {
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+
+    #toast.err::before {
+      content: '✕';
+      color: var(--red);
+    }
+
+    /* ── SEARCH BAR ── */
+    .search-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 1.5rem;
+      align-items: center;
+    }
+
+    .search-bar input {
+      max-width: 320px;
+      background: var(--surface);
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #3f3f46;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #52525b;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- LOGIN -->
+  <div id="login-screen">
+    <div class="login-box">
+      <div class="login-brand">
+        <div class="brandmark">🏦</div>
+        <h1>NCBA Admin Portal</h1>
+        <p>Bank Management System</p>
+      </div>
+      <div class="form-group">
+        <label>Username</label>
+        <input id="lu" value="admin" placeholder="admin">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input id="lp" type="password" value="admin123" placeholder="••••••••">
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:0.5rem" onclick="login()" id="lbtn">Sign In</button>
+      <p style="text-align:center;color:var(--muted);font-size:11px;margin-top:1rem">Default: admin / admin123</p>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div id="app">
+    <header>
+      <h1>NCBA Bank Admin Portal</h1>
+      <span class="hdr-badge">v2.0</span>
+      <a href="/docs.html" class="btn-hdr"
+        style="text-decoration:none; margin-left:16px; margin-right:auto; display:flex; align-items:center; gap:6px;">📚
+        API Docs</a>
+      <div class="hdr-user">
+        <div class="hdr-avatar" id="hdr-av">A</div>
+        <span id="hdr-name">Admin</span>
+      </div>
+      <button class="btn-hdr" onclick="logout()">Sign Out</button>
+    </header>
+
+    <div class="body-wrap">
+      <aside>
+        <div class="nav-group-label">Overview</div>
+        <button class="nav-btn active" onclick="nav('dashboard')" id="nb-dashboard"><span
+            class="ico">📊</span>Dashboard</button>
+
+        <div class="nav-group-label">Configuration</div>
+        <button class="nav-btn" onclick="nav('branches')" id="nb-branches"><span class="ico">🏢</span>Branches<span
+            class="nav-count" id="nc-branches">0</span></button>
+        <button class="nav-btn" onclick="nav('deposit-types')" id="nb-deposit-types"><span class="ico">📦</span>Deposit
+          Types<span class="nav-count" id="nc-deposit-types">0</span></button>
+
+        <div class="nav-group-label">Customers</div>
+        <button class="nav-btn" onclick="nav('users')" id="nb-users"><span class="ico">👤</span>Users<span
+            class="nav-count" id="nc-users">0</span></button>
+        <button class="nav-btn" onclick="nav('accounts')" id="nb-accounts"><span class="ico">🏦</span>Accounts<span
+            class="nav-count" id="nc-accounts">0</span></button>
+
+        <div class="nav-group-label">Operations</div>
+        <button class="nav-btn" onclick="nav('standing-orders')" id="nb-standing-orders"><span
+            class="ico">📋</span>Standing Orders<span class="nav-count" id="nc-standing-orders">0</span></button>
+
+        <div class="nav-group-label">Settings</div>
+        <button class="nav-btn" onclick="nav('admins')" id="nb-admins">
+          <div class="ico">🛡️</div> Admins <div class="nav-count" id="nc-admins">0</div>
+        </button>
+        <button class="nav-btn" onclick="nav('dynamic-mocks')" id="nb-dynamic-mocks">
+          <div class="ico">⚡</div> Dynamic Mocks <div class="nav-count" id="nc-dynamic-mocks">0</div>
+        </button>
+      </aside>
+
+      <div class="content">
+
+        <!-- DASHBOARD -->
+        <div class="page active" id="pg-dashboard">
+          <div class="pg-header">
+            <div>
+              <div class="pg-title">Dashboard</div>
+              <div class="pg-sub">System overview</div>
+            </div>
+          </div>
+          <div class="stats-row">
+            <div class="stat navy">
+              <div class="stat-n" id="ds-branches">—</div>
+              <div class="stat-l">Branches</div>
+            </div>
+            <div class="stat gold">
+              <div class="stat-n" id="ds-users">—</div>
+              <div class="stat-l">Users</div>
+            </div>
+            <div class="stat green">
+              <div class="stat-n" id="ds-accounts">—</div>
+              <div class="stat-l">Accounts</div>
+            </div>
+            <div class="stat blue">
+              <div class="stat-n" id="ds-so">—</div>
+              <div class="stat-l">Standing Orders</div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="card">
+              <div class="card-header">
+                <h3>Recent Users</h3><button class="btn btn-sm btn-secondary" onclick="nav('users')">View All</button>
+              </div>
+              <div class="card-body" id="dash-users-list">
+                <div class="empty">
+                  <div class="empty-ico">👤</div>
+                  <p>No users yet</p>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <h3>Recent Standing Orders</h3><button class="btn btn-sm btn-secondary"
+                  onclick="nav('standing-orders')">View All</button>
+              </div>
+              <div class="card-body" id="dash-so-list">
+                <div class="empty">
+                  <div class="empty-ico">📋</div>
+                  <p>No standing orders yet</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BRANCHES -->
+        <div class="page" id="pg-branches">
+          <div class="pg-header">
+            <div>
+              <div class="pg-title">Branches</div>
+              <div class="pg-sub">Register and manage bank branches</div>
+            </div>
+            <button class="btn btn-primary" onclick="openModal('branch')">+ New Branch</button>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>All Branches</h3>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Region</th>
+                    <th>Manager</th>
+                    <th>Phone</th>
+                    <th>Status</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="branches-tbody">
+                  <tr>
+                    <td colspan="7">
+                      <div class="empty">
+                        <p>Loading...</p>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- DEPOSIT TYPES -->
+        <div class="page" id="pg-deposit-types">
+          <div class="pg-header">
+            <div>
+              <div class="pg-title">Deposit Types</div>
+              <div class="pg-sub">Configure available deposit products</div>
+            </div>
+            <button class="btn btn-primary" onclick="openModal('deposit-type')">+ New Deposit Type</button>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>All Deposit Types</h3>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Currency</th>
+                    <th>Base Rate</th>
+                    <th>Min Amount</th>
+                    <th>Term (days)</th>
+                    <th>WHT</th>
+                    <th>Status</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="deposit-types-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── PAGE: ADMINS ── -->
+        <div class="page" id="pg-admins">
+          <div class="pg-header">
+            <div>
+              <h2 class="pg-title">Administrators</h2>
+              <div class="pg-sub">Manage portal access and admin accounts</div>
+            </div>
+            <button class="btn btn-primary" onclick="openModal_admin()">+ New Admin</button>
+          </div>
+          <div class="card">
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="admins-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+
+
+        <!-- ── PAGE: ADMINS ── -->
+        <div class="page" id="pg-admins">
+          <div class="pg-header">
+            <div>
+              <h2 class="pg-title">Administrators</h2>
+              <div class="pg-sub">Manage portal access and admin accounts</div>
+            </div>
+            <button class="btn btn-primary" onclick="openModal_admin()">+ New Admin</button>
+          </div>
+          <div class="card">
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="admins-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── PAGE: MOCK STUDIO ── -->
+        <div class="page" id="pg-dynamic-mocks">
+          <div class="pg-header">
+            <div>
+              <h2 class="pg-title">Mock Studio</h2>
+              <div class="pg-sub">Advanced API rules & behavior simulation</div>
+            </div>
+            <div style="display:flex; gap:10px">
+              <button class="btn btn-emerald" style="background:#059669; border:none" onclick="openModal('usage')">📖
+                Usage Guide</button>
+              <button class="btn btn-primary" onclick="openModal_mock()">+ New Endpoint</button>
+            </div>
+          </div>
+
+          <div class="studio-wrap" id="stu-empty">
+            <div class="empty" style="grid-column: span 2">
+              <div class="empty-ico">⚡</div>
+              <h3>No Endpoints Defined</h3>
+              <p>Create your first custom mock endpoint to open the Studio</p>
+              <button class="btn btn-primary" style="margin-top:15px" onclick="openModal_mock()">Create Mock</button>
+            </div>
+          </div>
+
+          <div class="studio-wrap" id="stu-active" style="display:none">
+            <div class="studio-side">
+              <div style="padding:15px; border-bottom:1px solid var(--border); position:relative">
+                <input id="stu-search" placeholder="Filter endpoints..." class="v-input" oninput="renderStuList()"
+                  style="padding-right:30px">
+                <div id="stu-search-clear" onclick="clearStuSearch()"
+                  style="position:absolute; right:25px; top:50%; transform:translateY(-50%); cursor:pointer; opacity:0.5; display:none">
+                  ×</div>
+              </div>
+              <div class="studio-list" id="stu-list"></div>
+            </div>
+            <div class="studio-main">
+              <div class="studio-header">
+                <div>
+                  <div style="display:flex; align-items:center; gap:10px">
+                    <select id="s-method" class="badge-select">
+                      <option>GET</option>
+                      <option>POST</option>
+                      <option>PUT</option>
+                      <option>DELETE</option>
+                    </select>
+                    <input id="s-path" class="v-path-input" value="/v1/users">
+                  </div>
+                  <div id="s-name" style="font-size:11px; color:var(--muted); margin-top:4px">User Listing Mock</div>
+                </div>
+                <div style="display:flex; gap:10px">
+                  <button class="btn btn-sm btn-danger" onclick="deleteCurrentMock()">Delete</button>
+                  <button class="btn btn-primary" onclick="saveCurrentMock()">Save Changes</button>
+                </div>
+              </div>
+              <div class="studio-tabs">
+                <div class="tab-btn active" onclick="stuTab('body')">Body</div>
+                <div class="tab-btn" onclick="stuTab('headers')">Headers</div>
+                <div class="tab-btn" onclick="stuTab('rules')">Rules</div>
+                <div class="tab-btn" onclick="stuTab('config')">Config</div>
+              </div>
+              <div class="studio-content">
+                <div id="st-body" class="stu-panel" style="height:100%">
+                  <div class="code-editor-wrap">
+                    <div style="display:flex; justify-content:flex-end; padding-bottom:8px;">
+                      <div style="display:flex; gap:8px">
+                        <button class="btn btn-sm btn-emerald" style="background:#10b981; color:white; border:none"
+                          onclick="convertBodyToScript()">💻 Make Programmable</button>
+                        <button class="btn btn-sm btn-secondary" onclick="prettifyMockBody()">Prettify JSON</button>
+                      </div>
+                    </div>
+                    <textarea id="s-body" class="code-editor" spellcheck="false"></textarea>
+                  </div>
+                </div>
+                <div id="st-headers" class="stu-panel" style="display:none">
+                  <div class="form-group">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                      <label style="margin-bottom:0">Response Headers (JSON)</label>
+                      <button class="btn btn-sm btn-secondary" onclick="prettifyMockHeaders()">Prettify JSON</button>
+                    </div>
+                    <textarea id="s-headers" style="height:200px; font-family:monospace; font-size:12px"
+                      class="v-input"></textarea>
+                  </div>
+                </div>
+                <div id="st-rules" class="stu-panel" style="display:none">
+                  <div style="display:flex; justify-content:space-between; margin-bottom:15px">
+                    <h3>Conditional Rules</h3>
+                    <div style="display:flex; gap:8px">
+                      <button class="btn btn-sm btn-secondary" onclick="addStuRule('basic')">+ Add Rule</button>
+                      <button class="btn btn-sm btn-emerald" style="background:#10b981; color:white; border:none"
+                        onclick="addStuRule('script')">💻 Add Script Rule</button>
+                    </div>
+                  </div>
+                  <div id="stu-rules-list"></div>
+                </div>
+                <div id="st-config" class="stu-panel" style="display:none">
+                  <div class="card" style="margin-bottom:20px">
+                    <div class="card-body">
+                      <div class="form-group"><label>Default Status Code</label><input type="number" id="s-status"
+                          class="v-input" value="200"></div>
+                      <div class="form-row">
+                        <div class="form-group"><label>Simulated Latency (ms)</label><input type="number" id="s-latency"
+                            class="v-input" value="0"></div>
+                        <div class="form-group"><label>Failure Rate (%)</label><input type="number" id="s-fail"
+                            class="v-input" value="0"></div>
+                      </div>
+                      <div class="form-group" style="margin-top:15px"><label><input type="checkbox" id="s-active"
+                            checked> Endpoint Active</label></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- USERS -->
+        <div class="page" id="pg-users">
+          <div class="pg-header">
+            <div>
+              <div class="pg-title">Users</div>
+              <div class="pg-sub">Register and manage bank customers</div>
+            </div>
+            <button class="btn btn-primary" onclick="openModal('user')">+ New User</button>
+          </div>
+          <div class="search-bar">
+            <input id="user-search" placeholder="Search by name, email, ID number…" oninput="filterUsers()">
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>All Users</h3>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>CIF Number</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>ID Number</th>
+                    <th>Branch</th>
+                    <th>KYC</th>
+                    <th>Status</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="users-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACCOUNTS -->
+        <div class="page" id="pg-accounts">
+          <div class="pg-header">
+            <div>
+              <div class="pg-title">Accounts</div>
+              <div class="pg-sub">Manage deposit and withdrawable accounts</div>
+            </div>
+            <button class="btn btn-primary" onclick="openModal('account')">+ Open Account</button>
+          </div>
+          <div class="search-bar">
+            <select id="acc-type-filter" style="max-width:180px" onchange="loadAccounts()">
+              <option value="">All Types</option>
+              <option value="withdrawable">Withdrawable</option>
+              <option value="deposit">Deposit</option>
+            </select>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>All Accounts</h3>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Account No.</th>
+                    <th>Holder</th>
+                    <th>Type</th>
+                    <th>Subtype / Deposit Type</th>
+                    <th>Currency</th>
+                    <th>Balance / Principal</th>
+                    <th>Branch</th>
+                    <th>Status</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="accounts-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- STANDING ORDERS -->
+        <div class="page" id="pg-standing-orders">
+          <div class="pg-header">
+            <div>
+              <div class="pg-title">Standing Orders</div>
+              <div class="pg-sub">Register and manage recurring payment instructions</div>
+            </div>
+            <button class="btn btn-primary" onclick="openModal('standing-order')">+ New Standing Order</button>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>All Standing Orders</h3>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Reference</th>
+                    <th>Customer</th>
+                    <th>Debit Account</th>
+                    <th>Beneficiary</th>
+                    <th>Frequency</th>
+                    <th>Amount</th>
+                    <th>Next Payment</th>
+                    <th>Status</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="so-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /content -->
+    </div><!-- /body-wrap -->
+  </div><!-- /app -->
+
+  <div id="toast"></div>
+
+  <!-- ═══════════════════ MODALS ═══════════════════ -->
+
+  <!-- Dynamic Mock Modal -->
+  <div class="modal-overlay" id="modal-mock">
+    <div class="modal" style="max-width:600px">
+      <div class="modal-header">
+        <h2 id="modal-mock-title">New Dynamic Mock</h2>
+        <button class="close-btn" onclick="closeModal('mock')">×</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="dm-id">
+        <div class="form-row">
+          <div class="form-group"><label>Friendly Name <span class="req">*</span></label><input id="dm-name"
+              placeholder="Test Success Response"></div>
+          <div class="form-group"><label>Status</label>
+            <select id="dm-active">
+              <option value="true">Active</option>
+              <option value="false">Paused</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>HTTP Method <span class="req">*</span></label>
+            <select id="dm-method">
+              <option value="GET">GET</option>
+              <option value="POST">POST</option>
+              <option value="PUT">PUT</option>
+              <option value="DELETE">DELETE</option>
+              <option value="PATCH">PATCH</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Endpoint Path <span class="req">*</span></label><input id="dm-path"
+              placeholder="/v1/my-custom-api"></div>
+          <div class="form-group" style="width:100px"><label>HTTP Status</label><input id="dm-status" type="number"
+              value="200"></div>
+        </div>
+        <div class="form-group">
+          <label>Response Body (JSON) <span class="req">*</span></label>
+          <textarea id="dm-body"
+            style="height:150px; font-family:monospace; font-size:12px">{ "status": "success", "message": "It works!" }</textarea>
+        </div>
+        <div class="form-group">
+          <label>Headers (JSON)</label>
+          <textarea id="dm-headers"
+            style="height:60px; font-family:monospace; font-size:12px">{ "Content-Type": "application/json" }</textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('mock')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveMock()">Save Mock API</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Modal -->
+  <div class="modal-overlay" id="modal-admin">
+    <div class="modal" style="max-width:400px">
+      <div class="modal-header">
+        <h2 id="modal-admin-title">New Admin</h2>
+        <button class="close-btn" onclick="closeModal('admin')">×</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="adm-id">
+        <div class="form-group"><label>Name <span class="req">*</span></label><input id="adm-name"
+            placeholder="Super Admin"></div>
+        <div class="form-group"><label>Username <span class="req">*</span></label><input id="adm-username"
+            placeholder="admin"></div>
+        <div class="form-group"><label>Password <span class="req">*</span></label><input id="adm-password" type="text"
+            placeholder="admin123"></div>
+        <div class="form-group">
+          <label>Role</label>
+          <select id="adm-role">
+            <option value="admin">Admin</option>
+            <option value="superadmin">Superadmin</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('admin')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveAdmin()">Save Admin</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Usage Guide Modal -->
+  <div class="modal-overlay" id="modal-usage">
+    <div class="modal" style="max-width:800px">
+      <div class="modal-header">
+        <h2>Mock Studio Usage Guide</h2>
+        <button class="close-btn" onclick="closeModal('usage')">×</button>
+      </div>
+      <div class="modal-body" style="max-height:70vh; overflow-y:auto; padding-right:10px">
+        <div class="card" style="margin-bottom:20px; border-left:4px solid var(--emerald)">
+          <div class="card-body">
+            <h3 style="color:var(--emerald)">⚡ Pro Tip: The Echo Script</h3>
+            <p>Use this script in the <strong>Body</strong> tab to see exactly what your app is sending to the API:</p>
+            <pre style="background:#111; padding:10px; border-radius:4px; font-size:12px; color:#10b981">
+// script
+return {
+  receivedAt: new Date().toISOString(),
+  method: req.method,
+  headers: req.headers,
+  body: req.body,
+  query: req.query
+};</pre>
+          </div>
+        </div>
+
+        <h3>📝 Editor Tabs</h3>
+        <ul>
+          <li><strong>Body</strong>: Define the default JSON response. Use <code>// script</code> at the start to enable
+            dynamic generation.</li>
+          <li><strong>Headers</strong>: Set custom HTTP headers like <code>X-Total-Count</code> or
+            <code>Cache-Control</code>.
+          </li>
+          <li><strong>Rules</strong>: Create logic to return different responses based on request data. Rules are
+            checked from top to bottom.</li>
+          <li><strong>Config</strong>: Set simulated latency (delay) and random failure rates (500 errors).</li>
+        </ul>
+
+        <h3 style="margin-top:20px">💻 Scripting Reference</h3>
+        <p>In programmable rules and bodies, you have access to the <code>req</code> object:</p>
+        <table style="font-size:12px">
+          <tr style="border-bottom:1px solid var(--border)">
+            <th style="padding:8px">Field</th>
+            <th style="padding:8px">Description</th>
+          </tr>
+          <tr>
+            <td style="padding:8px"><code>req.body</code></td>
+            <td style="padding:8px">Parsed request JSON body</td>
+          </tr>
+          <tr>
+            <td style="padding:8px"><code>req.headers</code></td>
+            <td style="padding:8px">Request headers (all lowercase)</td>
+          </tr>
+          <tr>
+            <td style="padding:8px"><code>req.query</code></td>
+            <td style="padding:8px">URL query parameters</td>
+          </tr>
+          <tr>
+            <td style="padding:8px"><code>req.method</code></td>
+            <td style="padding:8px">HTTP method (GET, POST, etc.)</td>
+          </tr>
+        </table>
+
+        <h3 style="margin-top:20px">💡 Rule Examples</h3>
+        <ul style="font-size:13px">
+          <li><strong>Check Body</strong>: Set Source to <code>Script</code> and enter:
+            <code>req.body.amount > 5000</code>
+          </li>
+          <li><strong>Check Header</strong>: Set Source to <code>Header</code>, Key to <code>x-api-key</code>, Operator
+            to <code>not exists</code>.</li>
+          <li><strong>Dynamic Body</strong>: Start with <code>// script</code> and <code>return req.body</code> to echo
+            back payload.</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="closeModal('usage')">Got it!</button>
+      </div>
+    </div>
+  </div>
+  <!-- Branch Modal -->
+  <div class="modal-overlay" id="modal-branch">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modal-branch-title">New Branch</h2>
+        <button class="close-btn" onclick="closeModal('branch')">×</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="b-id">
+        <div class="form-row">
+          <div class="form-group"><label>Branch Code <span class="req">*</span></label><input id="b-code"
+              placeholder="WL001"></div>
+          <div class="form-group"><label>Branch Name <span class="req">*</span></label><input id="b-name"
+              placeholder="Westlands Branch"></div>
+        </div>
+        <div class="form-group"><label>Address <span class="req">*</span></label><input id="b-address"
+            placeholder="Westlands Road, Nairobi"></div>
+        <div class="form-row">
+          <div class="form-group"><label>Region <span class="req">*</span></label><input id="b-region"
+              placeholder="Nairobi"></div>
+          <div class="form-group"><label>Manager</label><input id="b-manager" placeholder="Peter Kamande"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Phone</label><input id="b-phone" placeholder="+254711111001"></div>
+          <div class="form-group"><label>Email</label><input id="b-email" placeholder="branch@ncbabank.co.ke"
+              type="email"></div>
+        </div>
+        <div class="form-group" id="b-status-group" style="display:none">
+          <label>Status</label>
+          <select id="b-status">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('branch')">Cancel</button>
+        <button class="btn btn-primary" id="b-save-btn" onclick="saveBranch()">Save Branch</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Deposit Type Modal -->
+  <div class="modal-overlay" id="modal-deposit-type">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modal-dt-title">New Deposit Type</h2>
+        <button class="close-btn" onclick="closeModal('deposit-type')">×</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="dt-id">
+        <div class="form-row">
+          <div class="form-group"><label>Code <span class="req">*</span></label><input id="dt-code" placeholder="FD">
+          </div>
+          <div class="form-group"><label>Name <span class="req">*</span></label><input id="dt-name"
+              placeholder="Fixed Deposit"></div>
+        </div>
+        <div class="form-group"><label>Description</label><textarea id="dt-desc"
+            placeholder="Standard fixed-term deposit…"></textarea></div>
+        <div class="form-row">
+          <div class="form-group"><label>Currency <span class="req">*</span></label>
+            <select id="dt-currency">
+              <option value="KES">KES</option>
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              <option value="GBP">GBP</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Base Rate (% p.a.) <span class="req">*</span></label><input id="dt-rate"
+              type="number" step="0.1" placeholder="9.5"></div>
+        </div>
+        <div class="sec-div">Amounts</div>
+        <div class="form-row">
+          <div class="form-group"><label>Min Amount</label><input id="dt-min-amt" type="number" placeholder="10000">
+          </div>
+          <div class="form-group"><label>Max Amount</label><input id="dt-max-amt" type="number"
+              placeholder="Leave blank for unlimited"></div>
+        </div>
+        <div class="sec-div">Term</div>
+        <div class="form-row">
+          <div class="form-group"><label>Min Term (days)</label><input id="dt-min-days" type="number" placeholder="30">
+          </div>
+          <div class="form-group"><label>Max Term (days)</label><input id="dt-max-days" type="number"
+              placeholder="Leave blank for unlimited"></div>
+        </div>
+        <div class="sec-div">Tax & Renewal</div>
+        <div class="form-row">
+          <div class="form-group"><label>Withholding Tax (%)</label><input id="dt-wht" type="number" value="15"
+              step="0.1"></div>
+          <div class="form-group"><label>Auto-Renew Default</label>
+            <select id="dt-renew">
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('deposit-type')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveDepositType()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Modal -->
+  <div class="modal-overlay" id="modal-user">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modal-user-title">New User</h2>
+        <button class="close-btn" onclick="closeModal('user')">×</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="u-id">
+        <div class="sec-div">Personal Details</div>
+        <div class="form-row">
+          <div class="form-group"><label>First Name <span class="req">*</span></label><input id="u-fname"
+              placeholder="John"></div>
+          <div class="form-group"><label>Last Name <span class="req">*</span></label><input id="u-lname"
+              placeholder="Mwangi"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Date of Birth</label><input id="u-dob" type="date"></div>
+          <div class="form-group"><label>Gender</label>
+            <select id="u-gender">
+              <option value="">—</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="sec-div">Contact & Identity</div>
+        <div class="form-row">
+          <div class="form-group"><label>Email <span class="req">*</span></label><input id="u-email" type="email"
+              placeholder="john@email.com"></div>
+          <div class="form-group"><label>Phone <span class="req">*</span></label><input id="u-phone"
+              placeholder="+254712345678"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>ID Type <span class="req">*</span></label>
+            <select id="u-id-type">
+              <option value="national_id">National ID</option>
+              <option value="passport">Passport</option>
+              <option value="alien_id">Alien ID</option>
+            </select>
+          </div>
+          <div class="form-group"><label>ID Number <span class="req">*</span></label><input id="u-id-num"
+              placeholder="12345678"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>KRA PIN</label><input id="u-kra" placeholder="A001234567B"></div>
+          <div class="form-group"><label>Branch <span class="req">*</span></label><select id="u-branch"></select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Address</label><input id="u-address"
+              placeholder="P.O. Box 1234-00100, Nairobi"></div>
+          <div class="form-group"><label>API Password</label><input id="u-password" type="text"
+              placeholder="Leave blank to keep unchanged"></div>
+        </div>
+        <div class="form-group" id="u-kyc-group" style="display:none">
+          <label>KYC Status</label>
+          <select id="u-kyc">
+            <option value="pending">Pending</option>
+            <option value="verified">Verified</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('user')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveUser()">Save User</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Account Modal -->
+  <div class="modal-overlay" id="modal-account">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Open Account</h2>
+        <button class="close-btn" onclick="closeModal('account')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group"><label>Customer <span class="req">*</span></label><select id="acc-user"></select></div>
+        <div class="form-row">
+          <div class="form-group"><label>Account Type <span class="req">*</span></label>
+            <select id="acc-type" onchange="toggleAccType()">
+              <option value="withdrawable">Withdrawable</option>
+              <option value="deposit">Deposit</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Currency <span class="req">*</span></label>
+            <select id="acc-currency">
+              <option value="KES">KES</option>
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              <option value="GBP">GBP</option>
+            </select>
+          </div>
+        </div>
+        <!-- Withdrawable fields -->
+        <div id="acc-withdrawable-fields">
+          <div class="form-group"><label>Subtype <span class="req">*</span></label>
+            <select id="acc-subtype">
+              <option value="current">Current</option>
+              <option value="savings">Savings</option>
+              <option value="cheque">Cheque</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Opening Balance (KES)</label><input id="acc-balance" type="number"
+              placeholder="0"></div>
+        </div>
+        <!-- Deposit fields -->
+        <div id="acc-deposit-fields" style="display:none">
+          <div class="form-group"><label>Deposit Type <span class="req">*</span></label><select
+              id="acc-dep-type"></select></div>
+          <div class="form-row">
+            <div class="form-group"><label>Principal Amount <span class="req">*</span></label><input id="acc-principal"
+                type="number" placeholder="100000"></div>
+            <div class="form-group"><label>Rate (% p.a.)</label><input id="acc-rate" type="number" step="0.1"
+                placeholder="9.5"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Term (days)</label><input id="acc-term" type="number" placeholder="90"></div>
+            <div class="form-group"><label>Value Date</label><input id="acc-value-date" type="date"></div>
+          </div>
+          <div class="form-group"><label>Maturity Date</label><input id="acc-maturity-date" type="date"></div>
+        </div>
+        <div class="form-group"><label>Branch (optional — defaults to user's branch)</label><select id="acc-branch">
+            <option value="">— use user's branch —</option>
+          </select></div>
+        <div class="form-group"><label>Opened Date</label><input id="acc-opened" type="date"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('account')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveAccount()">Open Account</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Standing Order Modal -->
+  <div class="modal-overlay" id="modal-standing-order">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modal-so-title">New Standing Order</h2>
+        <button class="close-btn" onclick="closeModal('standing-order')">×</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="so-id">
+        <div class="sec-div">Customer & Account</div>
+        <div class="form-group"><label>Customer <span class="req">*</span></label>
+          <select id="so-user" onchange="loadUserWithdrawableAccounts()">
+            <option value="">— select customer —</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Debit Account <span class="req">*</span></label>
+          <select id="so-debit-acc">
+            <option value="">— select customer first —</option>
+          </select>
+        </div>
+        <div class="sec-div">Payment Schedule</div>
+        <div class="form-row">
+          <div class="form-group"><label>Frequency <span class="req">*</span></label>
+            <select id="so-freq">
+              <option value="once">Once</option>
+              <option value="monthly" selected>Monthly</option>
+              <option value="quarterly">Quarterly</option>
+              <option value="half-yearly">Half-Yearly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Regular Payment Day (of month)</label><input id="so-reg-day" type="number"
+              min="1" max="28" placeholder="1"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>First Payment Date <span class="req">*</span></label><input id="so-first-date"
+              type="date"></div>
+          <div class="form-group"><label>Last Payment Date</label><input id="so-last-date" type="date"></div>
+        </div>
+        <div class="sec-div">Amount</div>
+        <div class="form-row">
+          <div class="form-group"><label>Currency <span class="req">*</span></label>
+            <select id="so-currency">
+              <option value="KES">KES</option>
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              <option value="GBP">GBP</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Amount <span class="req">*</span></label><input id="so-amount" type="number"
+              placeholder="50000" oninput="soAmountWords()"></div>
+        </div>
+        <div class="form-group"><label>Amount in Words <span class="req">*</span></label><input id="so-amount-words"
+            placeholder="Fifty Thousand Kenya Shillings"></div>
+        <div class="sec-div">Remittance</div>
+        <div class="form-row">
+          <div class="form-group"><label>Remittance Mode</label>
+            <select id="so-mode">
+              <option value="telegraphic_transfer">Telegraphic Transfer</option>
+              <option value="bankers_draft">Bankers Draft</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Charge Type</label>
+            <select id="so-charge">
+              <option value="SHA">SHA</option>
+              <option value="OUR">OUR</option>
+              <option value="BEN">BEN</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><label>Details of Payment</label><input id="so-details"
+            placeholder="Monthly rent - Apt 4B"></div>
+        <div class="sec-div">Beneficiary</div>
+        <div class="form-row">
+          <div class="form-group"><label>Beneficiary Name <span class="req">*</span></label><input id="so-bene-name"
+              placeholder="Jane Otieno"></div>
+          <div class="form-group"><label>Beneficiary Account No.</label><input id="so-bene-acc"
+              placeholder="0200123456789"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Beneficiary Bank</label><input id="so-bene-bank"
+              placeholder="Equity Bank Kenya"></div>
+          <div class="form-group"><label>SWIFT Code</label><input id="so-swift" placeholder="EQBLKENA"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Physical Address</label><input id="so-bene-addr"
+              placeholder="Moi Avenue, Nairobi"></div>
+          <div class="form-group"><label>Country</label>
+            <select id="so-bene-country">
+              <option value="KE">Kenya</option>
+              <option value="UG">Uganda</option>
+              <option value="TZ">Tanzania</option>
+              <option value="GB">United Kingdom</option>
+              <option value="US">United States</option>
+              <option value="OTHER">Other</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('standing-order')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveStandingOrder()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BASE = 'http://localhost:3000/v1';
+    let TOKEN = localStorage.getItem('ncba_token') || '';
+    let ADMIN_DATA = JSON.parse(localStorage.getItem('ncba_admin') || 'null');
+
+    // ── API ──────────────────────────────────────────────────────────────────────
+    const api = {
+      async call(p, opt = {}) {
+        opt.headers = { ...opt.headers, Authorization: `Bearer ${TOKEN}` };
+        const res = await fetch(`${BASE}${p}`, opt);
+        if (res.status === 401) {
+          toast('Session expired. Please sign in again.', true);
+          logout(false);
+          throw new Error('Unauthorized');
+        }
+        return res;
+      },
+      get: (p) => api.call(p),
+      post: (p, b) => api.call(p, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) }),
+      put: (p, b) => api.call(p, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) }),
+      del: (p) => api.call(p, { method: 'DELETE' }),
+    };
+
+    // ── LOGIN ────────────────────────────────────────────────────────────────────
+    async function login() {
+      const btn = document.getElementById('lbtn');
+      btn.disabled = true; btn.textContent = 'Signing in…';
+      try {
+        const res = await fetch(`${BASE}/auth/login`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: document.getElementById('lu').value, password: document.getElementById('lp').value })
+        });
+        const d = await res.json();
+        if (!res.ok) { toast(d.message || 'Login failed', true); return; }
+
+        TOKEN = d.data.token;
+        ADMIN_DATA = d.data.admin;
+        localStorage.setItem('ncba_token', TOKEN);
+        localStorage.setItem('ncba_admin', JSON.stringify(ADMIN_DATA));
+
+        document.getElementById('hdr-name').textContent = ADMIN_DATA.name;
+        document.getElementById('hdr-av').textContent = ADMIN_DATA.name.split(' ').map(n => n[0]).join('');
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('app').style.display = 'flex';
+        document.getElementById('app').style.flexDirection = 'column';
+        loadAll();
+      } catch (e) {
+        console.error(e);
+        toast('Cannot connect — is the server running on port 3000?', true);
+      }
+      finally { btn.disabled = false; btn.textContent = 'Sign In'; }
+    }
+    document.getElementById('lp').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+
+    async function logout(callApi = true) {
+      if (callApi) await api.post('/auth/logout', {}).catch(() => { });
+      TOKEN = '';
+      ADMIN_DATA = null;
+      localStorage.removeItem('ncba_token');
+      localStorage.removeItem('ncba_admin');
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('app').style.display = 'none';
+    }
+
+    // Auto-login check
+    try {
+      if (TOKEN && ADMIN_DATA && ADMIN_DATA.name) {
+        document.getElementById('hdr-name').textContent = ADMIN_DATA.name;
+        document.getElementById('hdr-av').textContent = ADMIN_DATA.name.split(' ').map(n => n[0]).join('').toUpperCase();
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('app').style.display = 'flex';
+        document.getElementById('app').style.flexDirection = 'column';
+        loadAll();
+      } else if (TOKEN || ADMIN_DATA) {
+        logout(false);
+      }
+    } catch (e) {
+      console.error('Auto-login failed', e);
+      logout(false);
+    }
+
+    // ── NAVIGATION ───────────────────────────────────────────────────────────────
+    function nav(page) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(`pg-${page}`).classList.add('active');
+      document.getElementById(`nb-${page}`).classList.add('active');
+      const loaders = { branches: loadBranches, 'deposit-types': loadDepositTypes, users: loadUsers, accounts: loadAccounts, 'standing-orders': loadSOs, admins: loadAdmins, 'dynamic-mocks': loadMocks };
+      if (loaders[page]) loaders[page]();
+    }
+
+    // ── LOAD ALL ─────────────────────────────────────────────────────────────────
+    async function loadAll() {
+      loadDashboard(); loadBranches(); loadDepositTypes(); loadUsers(); loadAccounts(); loadSOs(); loadAdmins(); loadMocks();
+    }
+
+    // ── MOCK STUDIO ──────────────────────────────────────────────────────────────
+    let allMocks = [];
+    let currentMockId = null;
+
+    async function loadMocks() {
+      try {
+        const d = await api.get('/dynamic-mocks').then(r => r.json());
+        allMocks = d.data || [];
+        qs('#nc-dynamic-mocks').textContent = d.total || 0;
+
+        if (allMocks.length > 0) {
+          qs('#stu-empty').style.display = 'none';
+          qs('#stu-active').style.display = 'grid';
+
+          // Detect legacy duplicates
+          const seen = new Set();
+          const duplicates = allMocks.filter(m => {
+            const key = `${m.method}:${m.path}`;
+            if (seen.has(key)) return true;
+            seen.add(key);
+            return false;
+          });
+          if (duplicates.length > 0) {
+            toast(`Found ${duplicates.length} duplicate endpoints. Please clean them up to avoid conflicts.`, true);
+          }
+
+          renderStuList();
+          if (!currentMockId) selectMock(allMocks[0].id);
+        } else {
+          qs('#stu-empty').style.display = 'flex';
+          qs('#stu-active').style.display = 'none';
+        }
+      } catch { }
+    }
+
+    function renderStuList() {
+      const q = v('stu-search').toLowerCase();
+      const parts = q.split(/[\s/]+/).filter(x => x);
+
+      qs('#stu-search-clear').style.display = q ? 'block' : 'none';
+
+      const filtered = allMocks.filter(m => {
+        if (!q) return true;
+        const name = (m.name || '').toLowerCase();
+        const path = (m.path || '').toLowerCase();
+        const method = (m.method || '').toLowerCase();
+        return parts.every(p => name.includes(p) || path.includes(p) || method.includes(p));
+      });
+
+      qs('#stu-list').innerHTML = filtered.map(m => `
+        <div class="studio-item ${m.id === currentMockId ? 'active' : ''}" onclick="selectMock('${m.id}')" title="${m.path}">
+          <div style="font-size:16px">${m.active ? '🟢' : '⚪'}</div>
+          <div class="studio-item-info">
+            <div class="studio-item-name">${m.name || 'Untitled'}</div>
+            <div class="studio-item-path">${m.method || 'GET'} ${m.path || '/'}</div>
+          </div>
+        </div>
+      `).join('') || `<div class="empty" style="padding:20px; font-size:12px; opacity:0.6">No mocks match "${q}"</div>`;
+    }
+
+    function clearStuSearch() {
+      qs('#stu-search').value = '';
+      renderStuList();
+    }
+
+    function selectMock(id) {
+      currentMockId = id;
+      const m = allMocks.find(x => x.id === id);
+      if (!m) return;
+
+      qs('#s-name').textContent = m.name;
+      qs('#s-method').value = m.method;
+      qs('#s-path').value = m.path;
+      qs('#s-status').value = m.status_code;
+      qs('#s-latency').value = m.latency || 0;
+      qs('#s-fail').value = m.fail_rate || 0;
+      qs('#s-active').checked = !!m.active;
+      qs('#s-body').value = JSON.stringify(m.response_body, null, 2);
+      qs('#s-headers').value = JSON.stringify(m.headers || {}, null, 2);
+
+      renderStuRules(m.rules || []);
+      renderStuList();
+    }
+
+    function stuTab(t) {
+      document.querySelectorAll('.stu-panel').forEach(p => p.style.display = 'none');
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      qs(`#st-${t}`).style.display = 'block';
+      event.target.classList.add('active');
+    }
+
+    function renderStuRules(rules) {
+      qs('#stu-rules-list').innerHTML = rules.map((r, i) => {
+        const isScript = r.conditions && r.conditions[0] && r.conditions[0].source === 'script';
+        return `
+        <div class="rule-card">
+          <div class="rule-header">
+            <input class="v-input" style="font-weight:700; background:transparent; border:none; padding:0; width: auto" 
+                   value="${r.name || ''}" oninput="updateRuleField(${i}, 'name', this.value)" placeholder="Rule Name">
+            <button class="btn btn-sm btn-danger" onclick="removeStuRule(${i})">×</button>
+          </div>
+          
+          <div class="rule-conditions">
+            ${(r.conditions || []).map((c, ci) => `
+              <div class="cond-row">
+                <select class="v-input" onchange="updateConditionField(${i}, ${ci}, 'source', this.value)">
+                  <option value="header" ${c.source === 'header' ? 'selected' : ''}>Header</option>
+                  <option value="query" ${c.source === 'query' ? 'selected' : ''}>Query</option>
+                  <option value="body" ${c.source === 'body' ? 'selected' : ''}>Body</option>
+                  <option value="param" ${c.source === 'param' ? 'selected' : ''}>Param</option>
+                  <option value="script" ${c.source === 'script' ? 'selected' : ''}>JS Script</option>
+                </select>
+                
+                ${c.source === 'script' ? `
+                  <div style="grid-column: span 3">
+                    <textarea class="v-input td-mono" style="height:60px; font-size:12px; background:var(--surface)" 
+                              oninput="updateConditionField(${i}, ${ci}, 'value', this.value)" placeholder="return req.body.amount > 1000">${c.value}</textarea>
+                  </div>
+                ` : `
+                  <input class="v-input td-mono" value="${c.key || ''}" placeholder="Key" 
+                         oninput="updateConditionField(${i}, ${ci}, 'key', this.value)">
+                  <select class="v-input" onchange="updateConditionField(${i}, ${ci}, 'operator', this.value)">
+                    <option value="equals" ${c.operator === 'equals' ? 'selected' : ''}>==</option>
+                    <option value="not_equals" ${c.operator === 'not_equals' ? 'selected' : ''}>!=</option>
+                    <option value="contains" ${c.operator === 'contains' ? 'selected' : ''}>contains</option>
+                    <option value="exists" ${c.operator === 'exists' ? 'selected' : ''}>exists</option>
+                    <option value="not_exists" ${c.operator === 'not_exists' ? 'selected' : ''}>not exists</option>
+                    <option value="regex" ${c.operator === 'regex' ? 'selected' : ''}>regex</option>
+                  </select>
+                  <input class="v-input td-mono" value="${c.value || ''}" placeholder="Value" 
+                         oninput="updateConditionField(${i}, ${ci}, 'value', this.value)">
+                `}
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="rule-action" style="margin-top:15px; border-top:1px solid var(--border); padding-top:15px">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px">
+              <span style="color:var(--emerald); font-weight:700">➔ THEN</span>
+              <input type="number" class="v-input" style="width:80px" value="${r.response?.status_code || 200}" 
+                     oninput="updateRuleResponse(${i}, 'status_code', this.value)" placeholder="Status">
+              <span style="font-size:11px; color:var(--muted)">Response Body (JSON or // script):</span>
+            </div>
+            <textarea class="v-input td-mono" style="height:80px; font-size:12px" 
+                      oninput="updateRuleResponse(${i}, 'body', this.value)">${typeof r.response?.body === 'string' ? r.response?.body : JSON.stringify(r.response?.body || {}, null, 2)}</textarea>
+          </div>
+        </div>
+      `}).join('') || '<div class="empty" style="padding:20px">No rules defined. This endpoint always returns the default response.</div>';
+    }
+
+    async function saveCurrentMock() {
+      const m = allMocks.find(x => x.id === currentMockId);
+      if (!m) return;
+
+      let bodyData, headerData;
+      try { bodyData = JSON.parse(qs('#s-body').value); } catch (e) { toast('Invalid JSON in Body', true); return; }
+      try { headerData = JSON.parse(qs('#s-headers').value); } catch (e) { toast('Invalid JSON in Headers', true); return; }
+
+      const body = {
+        name: m.name,
+        method: v('s-method'),
+        path: v('s-path'),
+        status_code: parseInt(qs('#s-status').value),
+        latency: parseInt(qs('#s-latency').value),
+        fail_rate: parseInt(qs('#s-fail').value),
+        active: qs('#s-active').checked,
+        response_body: bodyData,
+        headers: headerData,
+        rules: m.rules || []
+      };
+
+      try {
+        const res = await api.put(`/dynamic-mocks/${currentMockId}`, body);
+        const data = await res.json();
+        if (res.ok) {
+          toast('Studio: Changes saved');
+          loadMocks();
+        } else if (res.status === 409) {
+          toast(data.message || 'Another mock already exists with this path', true);
+        } else {
+          toast(data.message || 'Failed to save', true);
+        }
+      } catch { toast('Network error', true); }
+    }
+
+    function updateRuleField(index, field, value) {
+      const m = allMocks.find(x => x.id === currentMockId);
+      if (m && m.rules[index]) {
+        m.rules[index][field] = value;
+      }
+    }
+
+    function updateConditionField(ruleIndex, condIndex, field, value) {
+      const m = allMocks.find(x => x.id === currentMockId);
+      if (m && m.rules[ruleIndex] && m.rules[ruleIndex].conditions[condIndex]) {
+        m.rules[ruleIndex].conditions[condIndex][field] = value;
+        if (field === 'source') renderStuRules(m.rules);
+      }
+    }
+
+    function updateRuleResponse(index, field, value) {
+      const m = allMocks.find(x => x.id === currentMockId);
+      if (m && m.rules[index]) {
+        if (!m.rules[index].response) m.rules[index].response = {};
+        if (field === 'status_code') m.rules[index].response.status_code = parseInt(value);
+        else if (field === 'body') {
+          if (value.startsWith('// script')) {
+            m.rules[index].response.body = value;
+          } else {
+            try { m.rules[index].response.body = JSON.parse(value); } catch (e) { /* ignore during typing */ }
+          }
+        }
+      }
+    }
+
+    function convertBodyToScript() {
+      const val = qs('#s-body').value;
+      if (val.startsWith('// script')) return;
+      qs('#s-body').value = `// script
+return {
+  status: "success",
+  time: new Date().toISOString(),
+  message: "Generated by script",
+  originalPayload: req.body
+};`;
+      toast('Body converted to Script');
+    }
+
+    function prettifyMockBody() {
+      const raw = qs('#s-body').value;
+      if (raw.startsWith('// script')) {
+        toast('Prettifier only works for pure JSON, not scripts', true);
+        return;
+      }
+      try {
+        const obj = JSON.parse(raw);
+        qs('#s-body').value = JSON.stringify(obj, null, 2);
+        toast('JSON Formatted');
+      } catch (e) {
+        toast('Invalid JSON', true);
+      }
+    }
+
+    function prettifyMockHeaders() {
+      const raw = qs('#s-headers').value;
+      if (raw.startsWith('// script')) {
+        toast('Prettifier only works for pure JSON', true);
+        return;
+      }
+      try {
+        const obj = JSON.parse(raw);
+        qs('#s-headers').value = JSON.stringify(obj, null, 2);
+        toast('Headers Formatted');
+      } catch (e) {
+        toast('Invalid JSON in Headers', true);
+      }
+    }
+
+    async function deleteCurrentMock() {
+      if (!confirm('Permanently delete this mock endpoint?')) return;
+      const res = await api.del(`/dynamic-mocks/${currentMockId}`);
+      if (res.ok) { toast('Endpoint deleted'); currentMockId = null; loadMocks(); }
+    }
+
+    function openModal_mock() {
+      const name = prompt('Enter a friendly name for this mock:');
+      if (!name) return;
+      api.post('/dynamic-mocks', { name, method: 'GET', path: '/v1/new-endpoint' })
+        .then(async r => {
+          const d = await r.json();
+          if (r.ok) {
+            loadMocks().then(() => selectMock(d.data.id));
+          } else if (r.status === 409) {
+            toast(d.message || 'Endpoint already exists', true);
+          } else {
+            toast(d.message || 'Failed to create mock', true);
+          }
+        });
+    }
+
+    function addStuRule(type = 'basic') {
+      const m = allMocks.find(x => x.id === currentMockId);
+      let rule;
+      if (type === 'script') {
+        const script = prompt('Enter JavaScript condition (req variable is available):', 'req.body.amount > 1000');
+        if (!script) return;
+        rule = {
+          name: 'Script: ' + (script.length > 20 ? script.substring(0, 20) + '...' : script),
+          conditions: [{ source: 'script', key: 'js', operator: 'script', value: script }],
+          response: { status_code: 400, body: '// script\nreturn { status: "error", message: "Script Condition Met" };' }
+        };
+      } else {
+        rule = {
+          name: prompt('Rule Name:', 'New Rule'),
+          conditions: [{ source: 'header', key: 'X-API-Key', operator: 'not_exists', value: '' }],
+          response: { status_code: 401, body: { status: 'error', message: 'Unauthorized' } }
+        };
+      }
+      if (!m.rules) m.rules = [];
+      m.rules.push(rule);
+      renderStuRules(m.rules);
+      toast('Rule added locally. Save to publish.');
+    }
+
+    function removeStuRule(i) {
+      const m = allMocks.find(x => x.id === currentMockId);
+      m.rules.splice(i, 1);
+      renderStuRules(m.rules);
+    }
+
+    // ── ADMINS ───────────────────────────────────────────────────────────────────
+    async function loadAdmins() {
+      try {
+        const d = await api.get('/admins').then(r => r.json());
+        qs('#nc-admins').textContent = d.total || 0;
+        qs('#admins-tbody').innerHTML = (d.data || []).map(a => `
+      <tr>
+        <td><strong>${a.name}</strong></td>
+        <td class="td-mono">${a.username}</td>
+        <td><span class="badge badge-verified">${a.role}</span></td>
+        <td><div class="actions">
+          <button class="btn btn-sm btn-secondary" onclick='editAdmin(${JSON.stringify(a).replace(/'/g, "&apos;")})'>Edit</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteAdmin('${a.id}')">Delete</button>
+        </div></td>
+      </tr>`).join('') || `<tr><td colspan="4"><div class="empty"><div class="empty-ico">🛡️</div><h3>No admins</h3></div></td></tr>`;
+      } catch { }
+    }
+
+    function openModal_admin() {
+      openModal('admin');
+      qs('#modal-admin-title').textContent = 'New Admin';
+      qs('#adm-id').value = '';
+    }
+
+    function editAdmin(a) {
+      qs('#modal-admin-title').textContent = 'Edit Admin';
+      qs('#adm-id').value = a.id;
+      qs('#adm-name').value = a.name;
+      qs('#adm-username').value = a.username;
+      qs('#adm-password').value = a.password;
+      qs('#adm-role').value = a.role || 'admin';
+      openModal('admin');
+    }
+
+    async function saveAdmin() {
+      const id = qs('#adm-id').value;
+      const body = { name: v('adm-name'), username: v('adm-username'), password: v('adm-password'), role: v('adm-role') };
+      try {
+        const res = id ? await api.put(`/admins/${id}`, body) : await api.post('/admins', body);
+        const d = await res.json();
+        if (!res.ok) { toastErrors(d); return; }
+        toast(id ? 'Admin updated' : 'Admin created');
+        closeModal('admin'); loadAdmins(); loadMocks();
+      } catch { toast('Error saving admin', true); }
+    }
+
+    async function deleteAdmin(id) {
+      if (!confirm('Are you sure you want to delete this admin account?')) return;
+      const res = await api.del(`/admins/${id}`);
+      if (res.ok) { toast('Admin deleted'); loadAdmins(); loadMocks(); } else toast('Failed to delete', true);
+    }
+
+    // ── DASHBOARD ────────────────────────────────────────────────────────────────
+    async function loadDashboard() {
+      try {
+        const [br, us, ac, so] = await Promise.all([
+          api.get('/branches').then(r => r.json()),
+          api.get('/users').then(r => r.json()),
+          api.get('/accounts').then(r => r.json()),
+          api.get('/standing-orders').then(r => r.json()),
+        ]);
+        qs('#ds-branches').textContent = br.total || 0;
+        qs('#ds-users').textContent = us.total || 0;
+        qs('#ds-accounts').textContent = ac.total || 0;
+        qs('#ds-so').textContent = so.total || 0;
+
+        qs('#dash-users-list').innerHTML = (us.data || []).slice(0, 4).map(u => `
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
+        <div style="width:32px;height:32px;background:var(--surface2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color: var(--text);">${u.first_name[0]}${u.last_name[0]}</div>
+        <div><div style="font-weight:500">${u.first_name} ${u.last_name}</div><div style="font-size:11px;color:var(--muted)">${u.customer_number} · ${u.branch_name || ''}</div></div>
+        <span class="badge badge-${u.kyc_status === 'verified' ? 'verified' : 'pending'}" style="margin-left:auto">${u.kyc_status}</span>
+      </div>`).join('') || '<div class="empty"><p>No users yet</p></div>';
+
+        qs('#dash-so-list').innerHTML = (so.data || []).slice(0, 4).map(o => `
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
+        <div style="flex:1"><div style="font-weight:500">${o.customer_name || '—'}</div><div style="font-size:11px;color:var(--muted)">${o.reference_number} → ${o.beneficiary?.name || '—'}</div></div>
+        <div style="font-weight:600">${o.currency} ${Number(o.amount).toLocaleString()}</div>
+        <span class="badge badge-${o.status === 'active' ? 'active' : 'cancelled'}">${o.status}</span>
+      </div>`).join('') || '<div class="empty"><p>No standing orders yet</p></div>';
+      } catch { }
+    }
+
+    // ── BRANCHES ─────────────────────────────────────────────────────────────────
+    async function loadBranches() {
+      try {
+        const d = await api.get('/branches').then(r => r.json());
+        qs('#nc-branches').textContent = d.total || 0;
+        qs('#branches-tbody').innerHTML = (d.data || []).map(b => `
+      <tr>
+        <td class="td-mono">${b.code}</td>
+        <td><strong>${b.name}</strong></td>
+        <td>${b.region}</td>
+        <td>${b.manager || '—'}</td>
+        <td class="td-muted">${b.phone || '—'}</td>
+        <td><span class="badge badge-${b.status}">${b.status}</span></td>
+        <td><div class="actions">
+          <button class="btn btn-sm btn-secondary" onclick='editBranch(${JSON.stringify(b)})'>Edit</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteBranch('${b.id}')">Deactivate</button>
+        </div></td>
+      </tr>`).join('') || `<tr><td colspan="7"><div class="empty"><div class="empty-ico">🏢</div><h3>No branches</h3><p>Add your first branch</p></div></td></tr>`;
+      } catch (e) { }
+    }
+
+    // ── DEPOSIT TYPES ────────────────────────────────────────────────────────────
+    async function loadDepositTypes() {
+      try {
+        const d = await api.get('/deposit-types').then(r => r.json());
+        qs('#nc-deposit-types').textContent = d.total || 0;
+        qs('#deposit-types-tbody').innerHTML = (d.data || []).map(t => `
+      <tr>
+        <td class="td-mono">${t.code}</td>
+        <td><strong>${t.name}</strong></td>
+        <td>${t.currency}</td>
+        <td><strong>${t.base_rate}%</strong></td>
+        <td>${t.min_amount ? t.currency + ' ' + Number(t.min_amount).toLocaleString() : '—'}</td>
+        <td>${t.min_term_days || '—'}${t.max_term_days ? ' – ' + t.max_term_days : t.min_term_days ? '+' : ''}</td>
+        <td>${t.withholding_tax_rate}%</td>
+        <td><span class="badge badge-${t.status}">${t.status}</span></td>
+        <td><div class="actions">
+          <button class="btn btn-sm btn-secondary" onclick='editDepositType(${JSON.stringify(t)})'>Edit</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteDepositType('${t.id}')">Deactivate</button>
+        </div></td>
+      </tr>`).join('') || `<tr><td colspan="9"><div class="empty"><div class="empty-ico">📦</div><h3>No deposit types</h3></div></td></tr>`;
+      } catch { }
+    }
+
+    // ── USERS ────────────────────────────────────────────────────────────────────
+    async function loadUsers() {
+      const q = qs('#user-search')?.value || '';
+      try {
+        const url = q ? `/users?q=${encodeURIComponent(q)}` : '/users';
+        const d = await api.get(url).then(r => r.json());
+        qs('#nc-users').textContent = d.total || 0;
+        qs('#users-tbody').innerHTML = (d.data || []).map(u => `
+      <tr>
+        <td class="td-mono">${u.customer_number}</td>
+        <td><strong>${u.first_name} ${u.last_name}</strong></td>
+        <td class="td-muted">${u.email}</td>
+        <td class="td-muted">${u.phone}</td>
+        <td class="td-mono">${u.id_number}</td>
+        <td>${u.branch_name || '—'}</td>
+        <td><span class="badge badge-${u.kyc_status === 'verified' ? 'verified' : 'pending'}">${u.kyc_status}</span></td>
+        <td><span class="badge badge-${u.status}">${u.status}</span></td>
+        <td><div class="actions">
+          <button class="btn btn-sm btn-secondary" onclick='editUser(${JSON.stringify(u)})'>Edit</button>
+          <button class="btn btn-sm btn-secondary" onclick="viewUserAccounts('${u.id}','${u.first_name} ${u.last_name}')">Accounts</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteUser('${u.id}')">Deactivate</button>
+        </div></td>
+      </tr>`).join('') || `<tr><td colspan="9"><div class="empty"><div class="empty-ico">👤</div><h3>No users</h3><p>Register your first customer</p></div></td></tr>`;
+      } catch { }
+    }
+    function filterUsers() { clearTimeout(window._ft); window._ft = setTimeout(loadUsers, 300); }
+
+    // ── ACCOUNTS ─────────────────────────────────────────────────────────────────
+    async function loadAccounts(userId) {
+      const type = qs('#acc-type-filter')?.value || '';
+      try {
+        let url = '/accounts';
+        const params = [];
+        if (type) params.push(`account_type=${type}`);
+        if (userId) params.push(`user_id=${userId}`);
+        if (params.length) url += '?' + params.join('&');
+        const d = await api.get(url).then(r => r.json());
+        qs('#nc-accounts').textContent = d.total || 0;
+        qs('#accounts-tbody').innerHTML = (d.data || []).map(a => `
+      <tr>
+        <td class="td-mono">${a.account_number}</td>
+        <td><strong>${a.account_holder || '—'}</strong><div class="td-muted">${a.customer_number || ''}</div></td>
+        <td><span class="badge badge-${a.account_type}">${a.account_type}</span></td>
+        <td class="td-muted">${a.account_subtype || a.deposit_type_name || '—'}</td>
+        <td>${a.currency}</td>
+        <td><strong>${a.currency} ${Number(a.balance || a.principal || 0).toLocaleString()}</strong>${a.maturity_date ? `<div class="td-muted">matures ${a.maturity_date}</div>` : ''}</td>
+        <td class="td-muted">${a.branch_name || '—'}</td>
+        <td><span class="badge badge-${a.status}">${a.status}</span></td>
+        <td><div class="actions">
+          <button class="btn btn-sm btn-danger" onclick="closeAccount('${a.id}')">Close</button>
+        </div></td>
+      </tr>`).join('') || `<tr><td colspan="9"><div class="empty"><div class="empty-ico">🏦</div><h3>No accounts</h3></div></td></tr>`;
+      } catch { }
+    }
+
+    function viewUserAccounts(userId, name) {
+      nav('accounts');
+      setTimeout(() => {
+        qs('#acc-type-filter').value = '';
+        loadAccounts(userId);
+      }, 100);
+    }
+
+    // ── STANDING ORDERS ──────────────────────────────────────────────────────────
+    async function loadSOs() {
+      try {
+        const d = await api.get('/standing-orders').then(r => r.json());
+        qs('#nc-standing-orders').textContent = d.total || 0;
+        qs('#so-tbody').innerHTML = (d.data || []).map(o => `
+      <tr>
+        <td class="td-mono">${o.reference_number}</td>
+        <td><strong>${o.customer_name || '—'}</strong><div class="td-muted">${o.customer_number || ''}</div></td>
+        <td class="td-mono">${o.debit_account_number || '—'}</td>
+        <td>${o.beneficiary?.name || '—'}<div class="td-muted">${o.beneficiary?.bank_name || ''}</div></td>
+        <td class="td-muted">${o.frequency}</td>
+        <td><strong>${o.currency} ${Number(o.amount).toLocaleString()}</strong></td>
+        <td class="td-muted">${o.next_payment_date || '—'}</td>
+        <td><span class="badge badge-${o.status}">${o.status}</span></td>
+        <td><div class="actions">
+          <button class="btn btn-sm btn-danger" onclick="cancelSO('${o.id}')">Cancel</button>
+        </div></td>
+      </tr>`).join('') || `<tr><td colspan="9"><div class="empty"><div class="empty-ico">📋</div><h3>No standing orders</h3></div></td></tr>`;
+      } catch { }
+    }
+
+    // ── MODAL HELPERS ────────────────────────────────────────────────────────────
+    function openModal(name) { qs(`#modal-${name}`).classList.add('open'); }
+    function closeModal(name) { qs(`#modal-${name}`).classList.remove('open'); clearModal(name); }
+    function closeModalOnOverlay(e, name) { if (e.target === e.currentTarget) closeModal(name); }
+
+    document.querySelectorAll('.modal-overlay').forEach(m => {
+      m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+    });
+
+    function clearModal(name) {
+      qs(`#modal-${name}`).querySelectorAll('input:not([type=hidden]),textarea').forEach(el => el.value = '');
+      qs(`#modal-${name}`).querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+    }
+
+    // ── BRANCH CRUD ──────────────────────────────────────────────────────────────
+    function editBranch(b) {
+      qs('#modal-branch-title').textContent = 'Edit Branch';
+      qs('#b-id').value = b.id; qs('#b-code').value = b.code; qs('#b-name').value = b.name;
+      qs('#b-address').value = b.address; qs('#b-region').value = b.region;
+      qs('#b-manager').value = b.manager || ''; qs('#b-phone').value = b.phone || ''; qs('#b-email').value = b.email || '';
+      qs('#b-status-group').style.display = 'block'; qs('#b-status').value = b.status;
+      qs('#b-code').disabled = true;
+      openModal('branch');
+    }
+
+    async function saveBranch() {
+      const id = qs('#b-id').value;
+      const body = { code: v('b-code'), name: v('b-name'), address: v('b-address'), region: v('b-region'), manager: v('b-manager') || undefined, phone: v('b-phone') || undefined, email: v('b-email') || undefined };
+      if (id) body.status = v('b-status');
+      try {
+        const res = id ? await api.put(`/branches/${id}`, body) : await api.post('/branches', body);
+        const d = await res.json();
+        if (!res.ok) { toastErrors(d); return; }
+        toast(id ? 'Branch updated' : 'Branch created');
+        closeModal('branch');
+        qs('#b-code').disabled = false;
+        loadBranches();
+      } catch { toast('Error saving branch', true); }
+    }
+
+    async function deleteBranch(id) {
+      if (!confirm('Deactivate this branch?')) return;
+      const res = await api.del(`/branches/${id}`);
+      if (res.ok) { toast('Branch deactivated'); loadBranches(); }
+      else toast('Failed', true);
+    }
+
+    // ── DEPOSIT TYPE CRUD ────────────────────────────────────────────────────────
+    function editDepositType(t) {
+      qs('#modal-dt-title').textContent = 'Edit Deposit Type';
+      qs('#dt-id').value = t.id; qs('#dt-code').value = t.code; qs('#dt-name').value = t.name;
+      qs('#dt-desc').value = t.description || ''; qs('#dt-currency').value = t.currency;
+      qs('#dt-rate').value = t.base_rate; qs('#dt-min-amt').value = t.min_amount || '';
+      qs('#dt-max-amt').value = t.max_amount || ''; qs('#dt-min-days').value = t.min_term_days || '';
+      qs('#dt-max-days').value = t.max_term_days || ''; qs('#dt-wht').value = t.withholding_tax_rate;
+      qs('#dt-renew').value = String(t.auto_renew_default);
+      qs('#dt-code').disabled = true;
+      openModal('deposit-type');
+    }
+
+    async function saveDepositType() {
+      const id = qs('#dt-id').value;
+      const body = {
+        code: v('dt-code'), name: v('dt-name'), description: v('dt-desc') || undefined, currency: v('dt-currency'),
+        base_rate: parseFloat(v('dt-rate')),
+        min_amount: parseFloat(v('dt-min-amt')) || undefined, max_amount: parseFloat(v('dt-max-amt')) || undefined,
+        min_term_days: parseInt(v('dt-min-days')) || undefined, max_term_days: parseInt(v('dt-max-days')) || undefined,
+        withholding_tax_rate: parseFloat(v('dt-wht')) || 15,
+        auto_renew_default: v('dt-renew') === 'true',
+      };
+      try {
+        const res = id ? await api.put(`/deposit-types/${id}`, body) : await api.post('/deposit-types', body);
+        const d = await res.json();
+        if (!res.ok) { toastErrors(d); return; }
+        toast(id ? 'Deposit type updated' : 'Deposit type created');
+        closeModal('deposit-type'); qs('#dt-code').disabled = false;
+        loadDepositTypes();
+      } catch { toast('Error', true); }
+    }
+
+    async function deleteDepositType(id) {
+      if (!confirm('Deactivate this deposit type?')) return;
+      const res = await api.del(`/deposit-types/${id}`);
+      if (res.ok) { toast('Deactivated'); loadDepositTypes(); } else toast('Failed', true);
+    }
+
+    // ── USER CRUD ────────────────────────────────────────────────────────────────
+    async function openModal_user() {
+      await populateBranchSelect('u-branch');
+      openModal('user');
+      qs('#modal-user-title').textContent = 'New User';
+      qs('#u-id').value = '';
+      qs('#u-password').value = '';
+      qs('#u-kyc-group').style.display = 'none';
+    }
+
+    async function editUser(u) {
+      await populateBranchSelect('u-branch');
+      qs('#modal-user-title').textContent = 'Edit User';
+      qs('#u-id').value = u.id; qs('#u-fname').value = u.first_name; qs('#u-lname').value = u.last_name;
+      qs('#u-email').value = u.email; qs('#u-phone').value = u.phone;
+      qs('#u-dob').value = u.date_of_birth || ''; qs('#u-gender').value = u.gender || '';
+      qs('#u-id-type').value = u.id_type; qs('#u-id-num').value = u.id_number;
+      qs('#u-kra').value = u.kra_pin || ''; qs('#u-address').value = u.address || '';
+      qs('#u-branch').value = u.branch_id; qs('#u-password').value = '';
+      qs('#u-kyc-group').style.display = 'block'; qs('#u-kyc').value = u.kyc_status;
+      openModal('user');
+    }
+
+    async function saveUser() {
+      const id = qs('#u-id').value;
+      const body = {
+        first_name: v('u-fname'), last_name: v('u-lname'), email: v('u-email'), phone: v('u-phone'),
+        id_type: v('u-id-type'), id_number: v('u-id-num'),
+        date_of_birth: v('u-dob') || undefined, gender: v('u-gender') || undefined,
+        address: v('u-address') || undefined, branch_id: v('u-branch'),
+        kra_pin: v('u-kra') || undefined,
+      };
+      const pw = v('u-password');
+      if (pw) body.password = pw;
+      if (id) body.kyc_status = v('u-kyc');
+      try {
+        const res = id ? await api.put(`/users/${id}`, body) : await api.post('/users', body);
+        const d = await res.json();
+        if (!res.ok) { toastErrors(d); return; }
+        toast(id ? 'User updated' : 'User registered');
+        closeModal('user'); loadUsers(); loadDashboard();
+      } catch { toast('Error', true); }
+    }
+
+    async function deleteUser(id) {
+      if (!confirm('Deactivate this user?')) return;
+      const res = await api.del(`/users/${id}`);
+      if (res.ok) { toast('User deactivated'); loadUsers(); } else toast('Failed', true);
+    }
+
+    // Override the button to also populate branches
+    document.querySelector('#modal-user').querySelector('.close-btn').addEventListener('click', () => closeModal('user'));
+    document.querySelector('#pg-users .btn-primary').addEventListener('click', openModal_user);
+
+    // ── ACCOUNT CRUD ─────────────────────────────────────────────────────────────
+    async function openModal_account() {
+      await Promise.all([populateUserSelect('acc-user'), populateBranchSelect('acc-branch', true), populateDepTypeSelect('acc-dep-type')]);
+      qs('#acc-opened').value = new Date().toISOString().slice(0, 10);
+      qs('#acc-value-date').value = new Date().toISOString().slice(0, 10);
+      openModal('account');
+    }
+    document.querySelector('#pg-accounts .btn-primary').addEventListener('click', openModal_account);
+
+    function toggleAccType() {
+      const t = v('acc-type');
+      qs('#acc-withdrawable-fields').style.display = t === 'withdrawable' ? 'block' : 'none';
+      qs('#acc-deposit-fields').style.display = t === 'deposit' ? 'block' : 'none';
+    }
+
+    async function saveAccount() {
+      const type = v('acc-type');
+      const body = {
+        user_id: v('acc-user'), branch_id: v('acc-branch') || undefined,
+        account_type: type, currency: v('acc-currency'),
+        opened_date: v('acc-opened') || undefined,
+      };
+      if (type === 'withdrawable') {
+        body.account_subtype = v('acc-subtype');
+        body.balance = parseFloat(v('acc-balance')) || 0;
+      } else {
+        body.deposit_type_id = v('acc-dep-type');
+        body.principal = parseFloat(v('acc-principal')) || 0;
+        body.rate = parseFloat(v('acc-rate')) || undefined;
+        body.term_days = parseInt(v('acc-term')) || undefined;
+        body.value_date = v('acc-value-date') || undefined;
+        body.maturity_date = v('acc-maturity-date') || undefined;
+      }
+      try {
+        const res = await api.post('/accounts', body);
+        const d = await res.json();
+        if (!res.ok) { toastErrors(d); return; }
+        toast('Account opened: ' + d.data.account_number);
+        closeModal('account'); loadAccounts(); loadDashboard();
+      } catch { toast('Error', true); }
+    }
+
+    async function closeAccount(id) {
+      if (!confirm('Close this account?')) return;
+      const res = await api.del(`/accounts/${id}`);
+      if (res.ok) { toast('Account closed'); loadAccounts(); } else toast('Failed', true);
+    }
+
+    // ── STANDING ORDERS ──────────────────────────────────────────────────────────
+    async function openModal_so() {
+      await populateUserSelect('so-user');
+      qs('#so-first-date').value = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
+      openModal('standing-order');
+    }
+    document.querySelector('#pg-standing-orders .btn-primary').addEventListener('click', openModal_so);
+
+    async function loadUserWithdrawableAccounts() {
+      const uid = v('so-user');
+      const sel = qs('#so-debit-acc');
+      sel.innerHTML = '<option value="">Loading…</option>';
+      if (!uid) { sel.innerHTML = '<option value="">— select customer first —</option>'; return; }
+      try {
+        const d = await api.get(`/users/${uid}/accounts?account_type=withdrawable`).then(r => r.json());
+        sel.innerHTML = (d.data || []).map(a => `<option value="${a.id}">${a.account_number} — ${a.account_subtype} (${a.currency})</option>`).join('');
+        if (!d.data?.length) sel.innerHTML = '<option value="">No withdrawable accounts found</option>';
+      } catch { sel.innerHTML = '<option value="">Error loading accounts</option>'; }
+    }
+
+    function soAmountWords() {
+      const amt = parseFloat(v('so-amount'));
+      if (!isNaN(amt) && amt > 0) qs('#so-amount-words').value = numWords(amt) + ' ' + ({ KES: 'Kenya Shillings', USD: 'US Dollars', EUR: 'Euros', GBP: 'Pounds Sterling' }[v('so-currency')] || '');
+    }
+
+    async function saveStandingOrder() {
+      const body = {
+        user_id: v('so-user'), debit_account_id: v('so-debit-acc'),
+        frequency: v('so-freq'), first_payment_date: v('so-first-date'),
+        regular_payment_date: parseInt(v('so-reg-day')) || undefined,
+        last_payment_date: v('so-last-date') || undefined,
+        currency: v('so-currency'), amount: parseFloat(v('so-amount')),
+        amount_words: v('so-amount-words'),
+        remittance_mode: v('so-mode'), charge_type: v('so-charge'),
+        details_of_payment: v('so-details') || undefined,
+        beneficiary: {
+          name: v('so-bene-name'), account_number: v('so-bene-acc') || undefined,
+          bank_name: v('so-bene-bank') || undefined, swift_code: v('so-swift') || undefined,
+          physical_address: v('so-bene-addr') || undefined, country: v('so-bene-country'),
+        },
+      };
+      try {
+        const id = v('so-id');
+        const res = id ? await api.put(`/standing-orders/${id}`, body) : await api.post('/standing-orders', body);
+        const d = await res.json();
+        if (!res.ok) { toastErrors(d); return; }
+        toast(id ? 'Standing order updated' : 'Standing order created: ' + d.data.reference_number);
+        closeModal('standing-order'); loadSOs(); loadDashboard();
+      } catch { toast('Error', true); }
+    }
+
+    async function cancelSO(id) {
+      if (!confirm('Cancel this standing order?')) return;
+      const res = await api.del(`/standing-orders/${id}`);
+      if (res.ok) { toast('Standing order cancelled'); loadSOs(); } else toast('Failed', true);
+    }
+
+    // ── HELPERS ──────────────────────────────────────────────────────────────────
+    async function populateBranchSelect(selId, addBlank = false) {
+      const sel = qs(`#${selId}`);
+      try {
+        const d = await api.get('/branches?status=active').then(r => r.json());
+        sel.innerHTML = (addBlank ? '<option value="">— use user\'s branch —</option>' : '') +
+          (d.data || []).map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+      } catch { sel.innerHTML = '<option value="">Error loading branches</option>'; }
+    }
+
+    async function populateUserSelect(selId) {
+      const sel = qs(`#${selId}`);
+      try {
+        const d = await api.get('/users?status=active').then(r => r.json());
+        sel.innerHTML = '<option value="">— select customer —</option>' +
+          (d.data || []).map(u => `<option value="${u.id}">${u.first_name} ${u.last_name} (${u.customer_number})</option>`).join('');
+      } catch { sel.innerHTML = '<option value="">Error loading users</option>'; }
+    }
+
+    async function populateDepTypeSelect(selId) {
+      const sel = qs(`#${selId}`);
+      try {
+        const d = await api.get('/deposit-types?status=active').then(r => r.json());
+        sel.innerHTML = '<option value="">— select deposit type —</option>' +
+          (d.data || []).map(t => `<option value="${t.id}">${t.name} (${t.base_rate}%)</option>`).join('');
+      } catch { }
+    }
+
+    function qs(sel) { return document.querySelector(sel); }
+    function v(id) { return (qs(`#${id}`)?.value || '').trim(); }
+
+    let toastTimer;
+    function toast(msg, err = false) {
+      const t = qs('#toast');
+      t.textContent = (err ? '✗ ' : '✓ ') + msg;
+      t.className = 'show' + (err ? ' err' : '');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.className = '', 3500);
+    }
+    function toastErrors(d) {
+      const msgs = d.errors?.map(e => e.message).join(', ') || d.message || 'Validation error';
+      toast(msgs, true);
+    }
+
+    // num → words
+    const W1 = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+    const W2 = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+    function nw(n) { if (n === 0) return ''; if (n < 20) return W1[n]; if (n < 100) return W2[Math.floor(n / 10)] + (n % 10 ? ' ' + W1[n % 10] : ''); if (n < 1000) return W1[Math.floor(n / 100)] + ' Hundred' + (n % 100 ? ' ' + nw(n % 100) : ''); if (n < 1e6) return nw(Math.floor(n / 1000)) + ' Thousand' + (n % 1000 ? ' ' + nw(n % 1000) : ''); return nw(Math.floor(n / 1e6)) + ' Million' + (n % 1e6 ? ' ' + nw(n % 1e6) : ''); }
+    function numWords(n) { const w = Math.floor(n); const c = Math.round((n - w) * 100); return (nw(w) || 'Zero') + (c ? ' and ' + nw(c) + ' Cents' : ''); }
+  </script>
+</body>
+
+</html>
