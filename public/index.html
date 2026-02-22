@@ -2095,6 +2095,7 @@ return {
         document.getElementById('app').style.display = 'flex';
         document.getElementById('app').style.flexDirection = 'column';
         loadAll();
+        nav('dashboard');
       } catch (e) {
         console.error(e);
         toast('Cannot connect — is the server running on port 3000?', true);
@@ -2122,7 +2123,8 @@ return {
         document.getElementById('app').style.display = 'flex';
         document.getElementById('app').style.flexDirection = 'column';
 
-        const lastPage = localStorage.getItem('ncba_last_page') || 'branches';
+        const lastPage = localStorage.getItem('ncba_last_page') || 'dashboard';
+        loadAll();
         nav(lastPage);
       } else if (TOKEN || ADMIN_DATA) {
         logout(false);
