@@ -124,13 +124,7 @@ const standingOrders = {};
 const deposits = {};
 
 // Admin users (for the portal login)
-const admins = {
-  "adm-0001": {
-    id: "adm-0001", name: "Admin User",
-    username: "admin", password: "admin123",
-    role: "superadmin",
-  },
-};
+const admins = {};
 
 const fs = require('fs');
 const path = require('path');

@@ -196,6 +196,13 @@
       "username": "admin",
       "password": "admin123",
       "role": "superadmin"
+    },
+    "adm-0002": {
+      "id": "adm-0002",
+      "name": "Super Admin",
+      "username": "superadmin",
+      "password": "mysecretpassword",
+      "role": "superadmin"
     }
   },
   "dynamicMocks": {

@@ -50,6 +50,5 @@ app.listen(PORT, () => {
   const base = `http://localhost:${PORT}${ROUTE_PREFIX}`;
   console.log(`\n🏦  NCBA Admin API  →  ${base}/v1`);
   console.log(`🖥️   Admin Portal   →  ${base}`);
-  console.log(`📚  API Docs       →  ${base}/docs.html`);
-  console.log(`\n  Login: admin / admin123\n`);
+  console.log(`📚  API Docs       →  ${base}/docs.html\n`);
 });

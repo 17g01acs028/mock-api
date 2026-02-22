@@ -13,7 +13,14 @@ npm run dev
 
 - **API** → `http://localhost:3000/v1`
 - **Admin Portal** → `http://localhost:3000`
-- **Login** → `admin` / `admin123`
+
+### 🔒 Admin Security
+To prevent unauthorized access, hardcoded credentials have been removed. You must create an admin user on your server before logging in:
+
+```bash
+# Usage: node scripts/setup-admin.js <username> <password> [display_name]
+node scripts/setup-admin.js admin your_secure_password
+```
 
 ---
 

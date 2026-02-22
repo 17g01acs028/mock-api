@@ -1082,7 +1082,7 @@
     <header>
       <h1>NCBA Bank Admin Portal</h1>
       <span class="hdr-badge">v2.0</span>
-      <a href="/docs.html" class="btn-hdr"
+      <a href="docs.html" class="btn-hdr"
         style="text-decoration:none; margin-left:16px; margin-right:auto; display:flex; align-items:center; gap:6px;">📚
         API Docs</a>
       <div class="hdr-user">
@@ -2121,7 +2121,9 @@ return {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('app').style.display = 'flex';
         document.getElementById('app').style.flexDirection = 'column';
-        loadAll();
+
+        const lastPage = localStorage.getItem('ncba_last_page') || 'branches';
+        nav(lastPage);
       } else if (TOKEN || ADMIN_DATA) {
         logout(false);
       }
@@ -2132,6 +2134,7 @@ return {
 
     // ── NAVIGATION ───────────────────────────────────────────────────────────────
     function nav(page) {
+      localStorage.setItem('ncba_last_page', page);
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       document.getElementById(`pg-${page}`).classList.add('active');
@@ -2172,7 +2175,12 @@ return {
           }
 
           renderStuList();
-          if (!currentMockId) selectMock(allMocks[0].id);
+          const lastMockId = localStorage.getItem('ncba_last_mock_id');
+          if (lastMockId && allMocks.some(m => m.id === lastMockId)) {
+            selectMock(lastMockId);
+          } else if (!currentMockId) {
+            selectMock(allMocks[0].id);
+          }
         } else {
           qs('#stu-empty').style.display = 'flex';
           qs('#stu-active').style.display = 'none';
@@ -2212,6 +2220,7 @@ return {
 
     function selectMock(id) {
       currentMockId = id;
+      localStorage.setItem('ncba_last_mock_id', id);
       const m = allMocks.find(x => x.id === id);
       if (!m) return;
 
