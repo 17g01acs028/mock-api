@@ -2,8 +2,10 @@ const express = require("express");
 const path = require("path");
 const app = express();
 
+const ROUTE_PREFIX = (process.env.ROUTE_PREFIX || "").replace(/\/+$/, "");
+if (ROUTE_PREFIX) console.log(`🚀 Using route prefix: ${ROUTE_PREFIX}`);
+
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
 
 // CORS
 app.use((req, res, next) => {
@@ -15,17 +17,28 @@ app.use((req, res, next) => {
 });
 
 // ─── ROUTES ─────────────────────────────────────────────────────────────────
-app.use("/v1/auth", require("./routes/auth"));
-app.use("/v1/admins", require("./routes/admins"));
-app.use("/v1/branches", require("./routes/branches"));
-app.use("/v1/deposit-types", require("./routes/depositTypes"));
-app.use("/v1/users", require("./routes/users"));
-app.use("/v1/accounts", require("./routes/accounts"));
-app.use("/v1/standing-orders", require("./routes/standingOrders"));
-app.use("/v1/dynamic-mocks", require("./routes/dynamicMocks"));
+const v1 = express.Router();
+v1.use("/auth", require("./routes/auth"));
+v1.use("/admins", require("./routes/admins"));
+v1.use("/branches", require("./routes/branches"));
+v1.use("/deposit-types", require("./routes/depositTypes"));
+v1.use("/users", require("./routes/users"));
+v1.use("/accounts", require("./routes/accounts"));
+v1.use("/standing-orders", require("./routes/standingOrders"));
+v1.use("/dynamic-mocks", require("./routes/dynamicMocks"));
+
+// Mount API and static files under prefix
+app.use(`${ROUTE_PREFIX}/v1`, v1);
+app.use(ROUTE_PREFIX || "/", express.static(path.join(__dirname, "public")));
 
 // ─── DYNAMIC MOCK INTERCEPTOR ────────────────────────────────────────────────
-app.use(require("./middleware/dynamicMockHandler"));
+// Catch-all for mocks. If prefix exists, it catches everything else under that prefix.
+const interceptor = require("./middleware/dynamicMockHandler");
+if (ROUTE_PREFIX) {
+  app.use(ROUTE_PREFIX, interceptor);
+} else {
+  app.use(interceptor);
+}
 
 // ─── 404 ────────────────────────────────────────────────────────────────────
 app.use((req, res) => {
@@ -34,8 +47,9 @@ app.use((req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`\n🏦  NCBA Admin API  →  http://localhost:${PORT}/v1`);
-  console.log(`🖥️   Admin Portal   →  http://localhost:${PORT}`);
-  console.log(`📚  API Docs       →  http://localhost:${PORT}/docs.html`);
+  const base = `http://localhost:${PORT}${ROUTE_PREFIX}`;
+  console.log(`\n🏦  NCBA Admin API  →  ${base}/v1`);
+  console.log(`🖥️   Admin Portal   →  ${base}`);
+  console.log(`📚  API Docs       →  ${base}/docs.html`);
   console.log(`\n  Login: admin / admin123\n`);
 });

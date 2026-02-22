@@ -2048,7 +2048,9 @@ return {
   </div>
 
   <script>
-    const BASE = 'http://localhost:3000/v1';
+    // Detect base prefix (e.g., if hosted at /ncba-bank, BASE becomes /ncba-bank/v1)
+    const PATH_PREFIX = window.location.pathname.replace(/\/(index\.html|docs\.html)?$/, '').replace(/\/+$/, '');
+    const BASE = `${window.location.origin}${PATH_PREFIX}/v1`;
     let TOKEN = localStorage.getItem('ncba_token') || '';
     let ADMIN_DATA = JSON.parse(localStorage.getItem('ncba_admin') || 'null');
 
