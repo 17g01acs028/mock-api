@@ -2,6 +2,14 @@ const router = require("express").Router();
 const db = require("../db");
 const { requireAuth } = require("../middleware/auth");
 
+// GET /me
+router.get("/me", requireAuth, (req, res) => {
+  if (req.userType !== 'user' || !req.user) {
+    return res.status(403).json({ status: "error", code: "FORBIDDEN", message: "Customer account required for this endpoint" });
+  }
+  res.json({ status: "success", data: enrichUser(req.user) });
+});
+
 // GET /users
 router.get("/", requireAuth, (req, res) => {
   const { status, branch_id, kyc_status, q } = req.query;

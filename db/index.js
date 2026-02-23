@@ -143,13 +143,13 @@ if (fs.existsSync(DB_PATH)) {
     Object.keys(dbState).forEach(key => {
       if (data[key]) Object.assign(dbState[key], data[key]);
     });
+    lastSavedState = JSON.stringify(dbState, null, 2);
   } catch (e) {
     console.error("Error loading db.json", e);
   }
 }
 
-let lastSavedState = '';
-
+// Auto-save: only save if there are in-memory changes
 function save() {
   const currentStateString = JSON.stringify(dbState, null, 2);
   if (currentStateString !== lastSavedState) {
@@ -157,6 +157,30 @@ function save() {
     lastSavedState = currentStateString;
   }
 }
+
+// Watch for external changes (like from the setup-admin script)
+fs.watch(DB_PATH, (eventType) => {
+  if (eventType === 'change') {
+    // Basic debounce / throttle can be added if needed, but for a mock it's usually fine
+    try {
+      const fileData = fs.readFileSync(DB_PATH, 'utf8');
+      if (fileData !== lastSavedState) {
+        const data = JSON.parse(fileData);
+        Object.keys(dbState).forEach(key => {
+          if (data[key]) {
+            // Merge carefully
+            Object.assign(dbState[key], data[key]);
+            // Also handle deletions if necessary, but assign is safer for mock
+          }
+        });
+        lastSavedState = fileData;
+        console.log('🔄 Database reloaded (detected external change)');
+      }
+    } catch (e) {
+      // Ignore read errors during concurrent write
+    }
+  }
+});
 
 // Auto-save every 5 seconds
 setInterval(save, 5000);

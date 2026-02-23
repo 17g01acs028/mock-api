@@ -11,7 +11,8 @@ router.post("/login", (req, res) => {
   // 1. Try Admin Login first
   const admin = Object.values(admins).find(a => a.username === username && a.password === password);
   if (admin) {
-    const token = createToken(admin.id);
+    console.log(`[NCBA Auth] Admin login: ${username}`);
+    const token = createToken(admin.id, 'admin');
     return res.json({
       status: "success",
       data: {
@@ -28,7 +29,8 @@ router.post("/login", (req, res) => {
   );
 
   if (user) {
-    const token = createToken(user.id);
+    console.log(`[NCBA Auth] Customer login: ${username}`);
+    const token = createToken(user.id, 'user');
     const branchName = branches[user.branch_id]?.name || "Local Branch";
     return res.json({
       status: "success",

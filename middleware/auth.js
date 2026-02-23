@@ -1,22 +1,38 @@
-const { admins } = require("../db");
+const { admins, users } = require("../db");
 
-const SESSIONS = {}; // token → admin id
+const SESSIONS = {}; // token → { id, type: 'admin' | 'user' }
 
-function createToken(adminId) {
-  const token = `ncba_${adminId}_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-  SESSIONS[token] = adminId;
+function createToken(id, type = 'admin') {
+  const token = `ncba_${id}_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+  SESSIONS[token] = { id, type };
   return token;
 }
 
 function requireAuth(req, res, next) {
   const auth = req.headers["authorization"] || "";
   const token = auth.replace("Bearer ", "").trim();
+
   if (!token || !SESSIONS[token]) {
-    return res.status(401).json({ status: "error", code: "UNAUTHORIZED", message: "Missing or invalid token" });
+    return res.status(401).json({
+      status: "error",
+      code: "UNAUTHORIZED",
+      message: "Missing or invalid token. Please login first."
+    });
   }
-  const admin = admins[SESSIONS[token]];
-  if (!admin) return res.status(401).json({ status: "error", code: "UNAUTHORIZED", message: "Session expired" });
-  req.admin = admin;
+
+  const session = SESSIONS[token];
+  if (session.type === 'admin') {
+    const admin = admins[session.id];
+    if (!admin) return res.status(401).json({ status: "error", code: "UNAUTHORIZED", message: "Session expired" });
+    req.admin = admin;
+    req.userType = 'admin';
+  } else {
+    const user = users[session.id];
+    if (!user) return res.status(401).json({ status: "error", code: "UNAUTHORIZED", message: "Session expired" });
+    req.user = user;
+    req.userType = 'user';
+  }
+
   next();
 }
 
